@@ -1,9 +1,11 @@
 <script setup lang="ts">
 
+import Editor from '@/components/Editor.vue';
+
 </script>
 
 <template>
-  123
+  <Editor />
 </template>
 
 <style scoped>

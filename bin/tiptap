@@ -5,6 +5,6 @@
 ARGS="$@"
 
 
-# Running the ShadCN CLI
+# Running the TipTap CLI
 
-bunx --bun shadcn-vue@latest $ARGS
+bunx --bun @tiptap/cli@latest $ARGS

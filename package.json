@@ -8,6 +8,7 @@
   "scripts": {
     "lint": "eslint",
     "shadcn": "bin/shadcn",
+    "tiptap": "bin/tiptap",
     "start": "bin/start",
     "build": "bin/build"
   },
