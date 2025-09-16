@@ -6,7 +6,7 @@ import globals from 'globals';
 
 export default [
   {
-    ignores: [ 'dist/**' ],
+    ignores: [ 'dist/**', 'src/shadcn/**' ],
     files: [ '**/*.{js,ts,vue}' ],
     languageOptions: {
       ecmaVersion: 2020,

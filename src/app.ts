@@ -6,7 +6,7 @@ import i18n from '@/i18n';
 import router from '@/router';
 import Component from './Component.vue';
 import 'vue-sonner/style.css';
-import './app.tail.css';
+import './app.css';
 
 
 // Third-parties
