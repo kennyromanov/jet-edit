@@ -139,30 +139,25 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { Editor, EditorContent } from '@tiptap/vue-3';
 import { Color, TextStyle } from '@tiptap/extension-text-style';
 import { ListItem } from '@tiptap/extension-list';
 import StarterKit from '@tiptap/starter-kit';
 
-export default {
-  components: { EditorContent },
+const editor = ref<Editor | null>(null);
 
-  data() {
-    return {
-      editor: null,
-    };
-  },
-
-  mounted() {
-    this.editor = new Editor({
-      extensions: [
-        Color.configure({ types: [ TextStyle.name, ListItem.name ] }),
-        TextStyle.configure({ types: [ ListItem.name ] }),
-        StarterKit,
-      ],
-      content: `
+// Instantiate the editor once the component is mounted.
+onMounted(() => {
+  editor.value = new Editor({
+    extensions: [
+      Color.configure({ types: [ TextStyle.name, ListItem.name ] }),
+      TextStyle.configure({ types: [ ListItem.name ] }),
+      StarterKit,
+    ],
+    content: `
         <h2>
           Hi there,
         </h2>
@@ -192,108 +187,107 @@ export default {
           — Mom
         </blockquote>
       `,
-    });
-  },
+  });
+});
 
-  beforeUnmount() {
-    this.editor.destroy();
-  },
-};
+// Dispose of the editor to prevent memory leaks.
+onBeforeUnmount(() => {
+  editor.value?.destroy();
+});
 
 </script>
 
-<style lang="scss">
+<style>
 
 /* Basic editor styles */
-.tiptap {
-  :first-child {
-    margin-top: 0;
-  }
+.tiptap :first-child {
+  margin-top: 0;
+}
 
-  /* List styles */
-  ul,
-  ol {
-    padding: 0 1rem;
-    margin: 1.25rem 1rem 1.25rem 0.4rem;
+/* List styles */
+.tiptap ul,
+.tiptap ol {
+  padding: 0 1rem;
+  margin: 1.25rem 1rem 1.25rem 0.4rem;
+}
 
-    li p {
-      margin-top: 0.25em;
-      margin-bottom: 0.25em;
-    }
-  }
+.tiptap ul li p,
+.tiptap ol li p {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
 
-  /* Heading styles */
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    line-height: 1.1;
-    margin-top: 2.5rem;
-    text-wrap: pretty;
-  }
+/* Heading styles */
+.tiptap h1,
+.tiptap h2,
+.tiptap h3,
+.tiptap h4,
+.tiptap h5,
+.tiptap h6 {
+  line-height: 1.1;
+  margin-top: 2.5rem;
+  text-wrap: pretty;
+}
 
-  h1,
-  h2 {
-    margin-top: 3.5rem;
-    margin-bottom: 1.5rem;
-  }
+.tiptap h1,
+.tiptap h2 {
+  margin-top: 3.5rem;
+  margin-bottom: 1.5rem;
+}
 
-  h1 {
-    font-size: 1.4rem;
-  }
+.tiptap h1 {
+  font-size: 1.4rem;
+}
 
-  h2 {
-    font-size: 1.2rem;
-  }
+.tiptap h2 {
+  font-size: 1.2rem;
+}
 
-  h3 {
-    font-size: 1.1rem;
-  }
+.tiptap h3 {
+  font-size: 1.1rem;
+}
 
-  h4,
-  h5,
-  h6 {
-    font-size: 1rem;
-  }
+.tiptap h4,
+.tiptap h5,
+.tiptap h6 {
+  font-size: 1rem;
+}
 
-  /* Code and preformatted text styles */
-  code {
-    background-color: var(--tiptap-purple-light);
-    border-radius: 0.4rem;
-    color: var(--tiptap-black);
-    font-size: 0.85rem;
-    padding: 0.25em 0.3em;
-  }
+/* Code and preformatted text styles */
+.tiptap code {
+  background-color: var(--tiptap-purple-light);
+  border-radius: 0.4rem;
+  color: var(--tiptap-black);
+  font-size: 0.85rem;
+  padding: 0.25em 0.3em;
+}
 
-  pre {
-    background: var(--tiptap-black);
-    border-radius: 0.5rem;
-    color: var(--tiptap-white);
-    font-family: 'JetBrainsMono', monospace;
-    margin: 1.5rem 0;
-    padding: 0.75rem 1rem;
+.tiptap pre {
+  background: var(--tiptap-black);
+  border-radius: 0.5rem;
+  color: var(--tiptap-white);
+  font-family: 'JetBrainsMono', monospace;
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem;
+}
 
-    code {
-      background: none;
-      color: inherit;
-      font-size: 0.8rem;
-      padding: 0;
-    }
-  }
+.tiptap pre code {
+  background: none;
+  color: inherit;
+  font-size: 0.8rem;
+  padding: 0;
+}
 
-  blockquote {
-    border-left: 3px solid var(--tiptap-gray-3);
-    margin: 1.5rem 0;
-    padding-left: 1rem;
-  }
+.tiptap blockquote {
+  border-left: 3px solid var(--tiptap-gray-3);
+  margin: 1.5rem 0;
+  padding-left: 1rem;
+}
 
-  hr {
-    border: none;
-    border-top: 1px solid var(--tiptap-gray-2);
-    margin: 2rem 0;
-  }
+.tiptap hr {
+  border: none;
+  border-top: 1px solid var(--tiptap-gray-2);
+  margin: 2rem 0;
 }
 
 </style>
