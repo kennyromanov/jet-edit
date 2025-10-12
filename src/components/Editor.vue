@@ -209,6 +209,8 @@ onBeforeUnmount(() => {
 .tiptap ol {
   padding: 0 1rem;
   margin: 1.25rem 1rem 1.25rem 0.4rem;
+  list-style-type: disc;
+  list-style-position: outside;
 }
 
 .tiptap ul li p,
