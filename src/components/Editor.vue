@@ -261,7 +261,7 @@ import { Menubar, MenubarCheckboxItem, MenubarContent, MenubarItem, MenubarMenu,
                 @click="tiptap.chain().focus().toggleLink().run()"
                 inset
             >
-              Link...
+              Link
               <MenubarShortcut><Link /></MenubarShortcut>
             </MenubarItem>
 
