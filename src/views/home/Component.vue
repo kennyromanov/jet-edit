@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import Editor from 'vue-edit';
+import Editor from '@/components/Editor.vue';
 
 </script>
 
