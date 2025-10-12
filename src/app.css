@@ -1,3 +1,3 @@
 @import "tailwindcss";
+@import "vue-edit/index.css";
 @import "@/shadcn/index.css";
-@import "@/tiptap/index.css";

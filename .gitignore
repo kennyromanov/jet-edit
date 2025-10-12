@@ -31,14 +31,14 @@ yarn-error.log*
 
 # Custom
 /node_modules
-/env
+/.vite
 /.vscode
 /.__mf__temp
+/env
 /.thumbs.db
 /.prettierignore
 /.prettierrc.json
 /package-lock.json
 /bun.lock
 /bun.lockb
-/env.v.json
 .DS_Store
