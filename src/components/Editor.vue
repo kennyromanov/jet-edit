@@ -1,134 +1,132 @@
 <template>
-  <slot v-if="tiptap" :tiptap="tiptap">
-    <div :class="cn('editor flex flex-col gap-10', props.class)">
-      <slot name="controls" :tiptap="tiptap">
-        <div class="editor_controls">
-          <div class="editor_control_group flex flex-wrap gap-6">
-            <div class="editor_control flex gap-1" aria-label="Text formatting">
-              <Button
-                  size="sm"
-                  :variant="tiptap.isActive('bold') ? 'default' : 'secondary'"
-                  :disabled="!tiptap.can().chain().focus().toggleBold().run()"
-                  @click="tiptap.chain().focus().toggleBold().run()"
-              >
-                <b>B</b>
-              </Button>
+  <div v-if="tiptap" :class="cn('editor flex flex-col gap-10', props.class)">
+    <slot name="controls" :tiptap="tiptap">
+      <div class="editor_controls">
+        <div class="editor_control_group flex flex-wrap gap-6">
+          <div class="editor_control flex gap-1" aria-label="Text formatting">
+            <Button
+                size="sm"
+                :variant="tiptap.isActive('bold') ? 'default' : 'secondary'"
+                :disabled="!tiptap.can().chain().focus().toggleBold().run()"
+                @click="tiptap.chain().focus().toggleBold().run()"
+            >
+              <b>B</b>
+            </Button>
 
-              <Button
-                  size="sm"
-                  :variant="tiptap.isActive('italic') ? 'default' : 'secondary'"
-                  :disabled="!tiptap.can().chain().focus().toggleItalic().run()"
-                  @click="tiptap.chain().focus().toggleItalic().run()"
-              >
-                <i>I</i>
-              </Button>
+            <Button
+                size="sm"
+                :variant="tiptap.isActive('italic') ? 'default' : 'secondary'"
+                :disabled="!tiptap.can().chain().focus().toggleItalic().run()"
+                @click="tiptap.chain().focus().toggleItalic().run()"
+            >
+              <i>I</i>
+            </Button>
 
-              <Button
-                  size="sm"
-                  :variant="tiptap.isActive('underline') ? 'default' : 'secondary'"
-                  :disabled="!tiptap.can().chain().focus().toggleUnderline().run()"
-                  @click="tiptap.chain().focus().toggleUnderline().run()"
-              >
-                <span class="underline">U</span>
-              </Button>
-            </div>
+            <Button
+                size="sm"
+                :variant="tiptap.isActive('underline') ? 'default' : 'secondary'"
+                :disabled="!tiptap.can().chain().focus().toggleUnderline().run()"
+                @click="tiptap.chain().focus().toggleUnderline().run()"
+            >
+              <span class="underline">U</span>
+            </Button>
+          </div>
 
-            <div class="editor_control flex gap-1" aria-label="Headings">
-              <Button
-                  size="sm"
-                  :variant="tiptap.isActive('paragraph') ? 'default' : 'secondary'"
-                  @click="tiptap.chain().focus().setParagraph().run()"
-              >
-                Text
-              </Button>
+          <div class="editor_control flex gap-1" aria-label="Headings">
+            <!--<Button-->
+            <!--    size="sm"-->
+            <!--    :variant="tiptap.isActive('paragraph') ? 'default' : 'secondary'"-->
+            <!--    @click="tiptap.chain().focus().setParagraph().run()"-->
+            <!--&gt;-->
+            <!--  Text-->
+            <!--</Button>-->
 
-              <Button
-                  size="sm"
-                  :variant="tiptap.isActive('heading', { level: 1 }) ? 'default' : 'secondary'"
-                  @click="tiptap.chain().focus().toggleHeading({ level: 1 }).run()"
-              >
-                H1
-              </Button>
+            <Button
+                size="sm"
+                :variant="tiptap.isActive('heading', { level: 1 }) ? 'default' : 'secondary'"
+                @click="tiptap.chain().focus().toggleHeading({ level: 1 }).run()"
+            >
+              H1
+            </Button>
 
-              <Button
-                  size="sm"
-                  :variant="tiptap.isActive('heading', { level: 2 }) ? 'default' : 'secondary'"
-                  @click="tiptap.chain().focus().toggleHeading({ level: 2 }).run()"
-              >
-                H2
-              </Button>
+            <Button
+                size="sm"
+                :variant="tiptap.isActive('heading', { level: 2 }) ? 'default' : 'secondary'"
+                @click="tiptap.chain().focus().toggleHeading({ level: 2 }).run()"
+            >
+              H2
+            </Button>
 
-              <Button
-                  size="sm"
-                  :variant="tiptap.isActive('heading', { level: 3 }) ? 'default' : 'secondary'"
-                  @click="tiptap.chain().focus().toggleHeading({ level: 3 }).run()"
-              >
-                H3
-              </Button>
-            </div>
+            <Button
+                size="sm"
+                :variant="tiptap.isActive('heading', { level: 3 }) ? 'default' : 'secondary'"
+                @click="tiptap.chain().focus().toggleHeading({ level: 3 }).run()"
+            >
+              H3
+            </Button>
+          </div>
 
-            <div class="editor_control flex gap-1" aria-label="Blocks">
-              <Button
-                  size="sm"
-                  :variant="tiptap.isActive('bulletList') ? 'default' : 'secondary'"
-                  @click="tiptap.chain().focus().toggleBulletList().run()"
-              >
-                Bullet
-              </Button>
+          <div class="editor_control flex gap-1" aria-label="Blocks">
+            <Button
+                size="sm"
+                :variant="tiptap.isActive('bulletList') ? 'default' : 'secondary'"
+                @click="tiptap.chain().focus().toggleBulletList().run()"
+            >
+              Bullet
+            </Button>
 
-              <Button
-                  size="sm"
-                  :variant="tiptap.isActive('orderedList') ? 'default' : 'secondary'"
-                  @click="tiptap.chain().focus().toggleOrderedList().run()"
-              >
-                List
-              </Button>
+            <Button
+                size="sm"
+                :variant="tiptap.isActive('orderedList') ? 'default' : 'secondary'"
+                @click="tiptap.chain().focus().toggleOrderedList().run()"
+            >
+              List
+            </Button>
 
-              <Button
-                  size="sm"
-                  :variant="tiptap.isActive('codeBlock') ? 'default' : 'secondary'"
-                  @click="tiptap.chain().focus().toggleCodeBlock().run()"
-              >
-                Code
-              </Button>
+            <Button
+                size="sm"
+                :variant="tiptap.isActive('codeBlock') ? 'default' : 'secondary'"
+                @click="tiptap.chain().focus().toggleCodeBlock().run()"
+            >
+              Code
+            </Button>
 
-              <Button
-                  size="sm"
-                  :variant="tiptap.isActive('blockquote') ? 'default' : 'secondary'"
-                  @click="tiptap.chain().focus().toggleBlockquote().run()"
-              >
-                Quote
-              </Button>
-            </div>
+            <Button
+                size="sm"
+                :variant="tiptap.isActive('blockquote') ? 'default' : 'secondary'"
+                @click="tiptap.chain().focus().toggleBlockquote().run()"
+            >
+              Quote
+            </Button>
+          </div>
 
-            <div class="editor_control flex gap-1" aria-label="History">
-              <Button
-                  variant="secondary"
-                  size="sm"
-                  :disabled="!tiptap.can().chain().focus().undo().run()"
-                  @click="tiptap.chain().focus().undo().run()"
-              >
-                Undo
-              </Button>
+          <div class="editor_control flex gap-1" aria-label="History">
+            <Button
+                variant="secondary"
+                size="sm"
+                :disabled="!tiptap.can().chain().focus().undo().run()"
+                @click="tiptap.chain().focus().undo().run()"
+            >
+              Undo
+            </Button>
 
-              <Button
-                  variant="secondary"
-                  size="sm"
-                  :disabled="!tiptap.can().chain().focus().redo().run()"
-                  @click="tiptap.chain().focus().redo().run()"
-              >
-                Redo
-              </Button>
-            </div>
+            <Button
+                variant="secondary"
+                size="sm"
+                :disabled="!tiptap.can().chain().focus().redo().run()"
+                @click="tiptap.chain().focus().redo().run()"
+            >
+              Redo
+            </Button>
           </div>
         </div>
-      </slot>
+      </div>
+    </slot>
 
-      <slot name="editor" :tiptap="tiptap">
-        <EditorContent class="editor_inner" :editor="tiptap as any" />
-      </slot>
-    </div>
-  </slot>
+    <slot :tiptap="tiptap">
+      <EditorContent class="editor_inner" :editor="tiptap as any" />
+    </slot>
+  </div>
 
   <slot v-else name="noContent">
     No Content
@@ -137,7 +135,7 @@
 
 <script setup lang="ts">
 
-import { onMounted, onBeforeUnmount, ref, HTMLAttributes } from 'vue';
+import { onMounted, onBeforeUnmount, ref, computed, watch, HTMLAttributes } from 'vue';
 import { cn } from '@/shadcn/lib/utils';
 import { Editor, EditorContent } from '@tiptap/vue-3';
 import { Color, TextStyle } from '@tiptap/extension-text-style';
@@ -147,16 +145,95 @@ import Underline from '@tiptap/extension-underline';
 import StarterKit from '@tiptap/starter-kit';
 
 
+// Constants
+
+const DEFAULT_TEXT = `
+  <h2>
+    Hi there,
+  </h2>
+  <p>
+    this is a <em>basic</em> example of <strong>Tiptap</strong>. Sure, there are all kind of basic text styles you’d probably expect from a text tiptap. But wait until you see the lists:
+  </p>
+  <ul>
+    <li>
+      That’s a bullet list with one …
+    </li>
+    <li>
+      … or two list items.
+    </li>
+  </ul>
+  <p>
+    Isn’t that great? And all of that is editable. But wait, there’s more. Let’s try a code block:
+  </p>
+  <pre><code class="language-css">body {
+display: none;
+}</code></pre>
+  <p>
+    I know, I know, this is impressive. It’s only the tip of the iceberg though. Give it a try and click a little bit around. Don’t forget to check the other examples too.
+  </p>
+  <blockquote>
+    Wow, that’s amazing. Good work, boy! 👏
+    <br />
+    — Mom
+  </blockquote>
+`;
+
+
 // Defining the props
 
 const props = defineProps<{
   class?: HTMLAttributes['class'] | null,
+  text?: string|null,
+  modelValue?: string|null,
+
+  noDefault?: boolean|null,
+}>();
+
+
+// Defining the emits
+
+const emit = defineEmits<{
+  (e: 'change', val: string|null): void,
+  (e: 'update:modelValue', val: string|null): void,
 }>();
 
 
 // Defining the variables
 
 const tiptap = ref<Editor | null>(null);
+
+
+// Defining the functions
+
+const set = (_val: string|null): void => tiptap.value?.commands.setContent(_val ?? '', false);
+
+
+// Defining the computed
+
+const val = computed<string|null>({
+  get(): string|null {
+    return props.modelValue ?? props.text ?? null;
+  },
+  set(val: string|null): void {
+    emit('change', val);
+    emit('update:modelValue', val);
+  },
+});
+
+const defaultText = computed<string>(() => {
+  return props.noDefault ? '' : DEFAULT_TEXT;
+});
+
+
+// Defining the watchers
+
+watch(val, (_val: string|null) => {
+  set(_val ?? '');
+}, { immediate: true });
+
+watch(defaultText, (_val: string) => {
+  set(val.value ?? props.text ?? _val);
+});
 
 
 // Defining the hooks
@@ -169,36 +246,7 @@ onMounted(() => {
       Underline,
       StarterKit,
     ],
-    content: `
-        <h2>
-          Hi there,
-        </h2>
-        <p>
-          this is a <em>basic</em> example of <strong>Tiptap</strong>. Sure, there are all kind of basic text styles you’d probably expect from a text tiptap. But wait until you see the lists:
-        </p>
-        <ul>
-          <li>
-            That’s a bullet list with one …
-          </li>
-          <li>
-            … or two list items.
-          </li>
-        </ul>
-        <p>
-          Isn’t that great? And all of that is editable. But wait, there’s more. Let’s try a code block:
-        </p>
-        <pre><code class="language-css">body {
-  display: none;
-}</code></pre>
-        <p>
-          I know, I know, this is impressive. It’s only the tip of the iceberg though. Give it a try and click a little bit around. Don’t forget to check the other examples too.
-        </p>
-        <blockquote>
-          Wow, that’s amazing. Good work, boy! 👏
-          <br />
-          — Mom
-        </blockquote>
-      `,
+    content: val.value ?? props.text ?? defaultText.value,
   });
 });
 
