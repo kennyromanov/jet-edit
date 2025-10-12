@@ -5,7 +5,7 @@ import Editor from '@/components/Editor.vue';
 </script>
 
 <template>
-  <Editor />
+  <Editor class="p-6" />
 </template>
 
 <style scoped>
