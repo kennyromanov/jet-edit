@@ -385,14 +385,5 @@ export function loop(breaker: BreakerHandler, timeout: number = DEFAULT_TIMEOUT,
     });
 }
 
-export function useSessionCache(): void {
-    const session = Cache.get('session');
-
-    if (session)
-        appStore.setSession(session);
-    else
-        console.log('Unable to authorize: The session cache was not found');
-}
-
 
 export { nanoid };

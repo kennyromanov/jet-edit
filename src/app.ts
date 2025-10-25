@@ -1,5 +1,4 @@
 import { createApp } from 'vue';
-import { useSessionCache } from '@/lib';
 import { useI18nCache, useI18nReactivity } from '@/i18n/lib';
 import store from '@/pinia/store';
 import i18n from '@/i18n';
@@ -13,8 +12,8 @@ import './app.css';
 
 export const appStore = store.useApp();
 
-useSessionCache();
 useI18nCache();
+
 useI18nReactivity();
 
 
