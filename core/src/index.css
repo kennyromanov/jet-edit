@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "vue-edit/index.css";
+@import "vue-sonner/style.css";
 
 
 /* System Styles */
@@ -148,21 +149,6 @@
 
 
 /* Base Styles */
-
-@layer base {
-    * {
-        @apply border-border outline-ring/50;
-    }
-    html {
-        @apply min-h-screen;
-    }
-    body {
-        @apply min-h-screen text-foreground bg-transparent;
-    }
-    #app {
-        @apply min-h-screen flex flex-col;
-    }
-}
 
 .jet_editor {
     --jetedit-editor-controls-size: calc(100% - var(--jetedit-editor-inner-size));

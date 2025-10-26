@@ -19,7 +19,6 @@
     /* Bundler mode */
     "outDir": "dist",
     "moduleResolution": "node",
-    "sandboxModules": true,
     "moduleDetection": "force",
     "declaration": true,
     "sourceMap": false,
