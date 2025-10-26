@@ -1,6 +1,6 @@
 {
   "name": "jet-edit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An Advanced Document Editor",
   "keywords": ["editor", "document editor", "flext"],
   "type": "module",
@@ -11,7 +11,8 @@
       "import": "./dist/index.es.js",
       "types": "./dist/index.d.ts"
     },
-    "./index.css": "./dist/index.css"
+    "./index.css": "./dist/index.css",
+    "./fonts.css": "./dist/fonts.css"
   },
   "scripts": {
     "lint": "eslint",

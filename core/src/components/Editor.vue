@@ -17,11 +17,11 @@ const props = defineProps<{
       :class="cn('jet_edit flex flex-row gap-0 overflow-y-hidden', props.class)"
       v-slot="{ EditorComponent, tiptap }"
   >
-    <div class="jet_edit_inner w-[var(--jetedit-editor-inner-size)] h-full py-[var(--jetedit-editor-padding)] pl-[var(--jetedit-editor-padding)] cursor-text bg-[var(--jetedit-editor-background)] overflow-y-scroll">
+    <div class="jet_edit_inner w-full h-full py-[var(--jetedit-editor-padding)] pl-[var(--jetedit-editor-padding)] cursor-text bg-[var(--jetedit-editor-background)] overflow-y-scroll">
       <component :is="EditorComponent" />
     </div>
 
-    <div class="jet_edit_controls py-[var(--jetedit-editor-padding)] flex flex-col gap-[var(--jetedit-editor-padding)]">
+    <div class="jet_edit_controls w-[var(--jetedit-editor-controls-size)] py-[var(--jetedit-editor-padding)] flex flex-col gap-[var(--jetedit-editor-padding)]">
       <div class="jet_edit_control flex gap-1" aria-label="History">
         <Button
             variant="secondary"
@@ -79,14 +79,6 @@ const props = defineProps<{
         <!--&gt;-->
         <!--  Text-->
         <!--</Button>-->
-
-        <Button
-            size="sm"
-            :variant="tiptap.isActive('heading', { level: 1 }) ? 'default' : 'secondary'"
-            @click="tiptap.chain().focus().toggleHeading({ level: 1 }).run()"
-        >
-          H1
-        </Button>
 
         <Button
             size="sm"
