@@ -2,7 +2,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": [ "src/*" ]
+      "@/*": [ "src/*" ],
+      "@public/*": [ "public/*" ],
+      "@core/*": [ "../core/dist/*" ],
+      "@core": [ "../core/dist/index.es.js" ]
     },
     "target": "ES2020",
     "useDefineForClassFields": true,
@@ -18,6 +21,7 @@
     /* Bundler mode */
     "outDir": "dist",
     "moduleResolution": "node",
+    "sandboxModules": true,
     "moduleDetection": "force",
     "declaration": true,
     "sourceMap": false,

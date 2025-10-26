@@ -150,18 +150,18 @@
 
 /* Base Styles */
 
-.jet_editor {
+.jet_edit {
     --jetedit-editor-controls-size: calc(100% - var(--jetedit-editor-inner-size));
     --jetedit-editor-controls-half-gap: calc(0.5 * var(--jetedit-editor-controls-gap));
 
 
-    .jet_editor_controls {
+    .jet_edit_controls {
         min-width: var(--jetedit-editor-controls-size);
         padding-left: var(--jetedit-editor-controls-half-gap);
         padding-right: var(--jetedit-editor-controls-half-gap);
     }
 
-    .jet_editor_inner {
+    .jet_edit_inner {
         padding-right: var(--jetedit-editor-controls-half-gap);
 
         h1, h2, h3, h4 {

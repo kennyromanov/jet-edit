@@ -14,15 +14,15 @@ const props = defineProps<{
 
 <template>
   <Editor
-      :class="cn('jet_editor flex flex-row gap-0 overflow-y-hidden', props.class)"
+      :class="cn('jet_edit flex flex-row gap-0 overflow-y-hidden', props.class)"
       v-slot="{ EditorComponent, tiptap }"
   >
-    <div class="jet_editor_inner w-[var(--jetedit-editor-inner-size)] h-full py-[var(--jetedit-editor-padding)] pl-[var(--jetedit-editor-padding)] cursor-text bg-[var(--jetedit-editor-background)] overflow-y-scroll">
+    <div class="jet_edit_inner w-[var(--jetedit-editor-inner-size)] h-full py-[var(--jetedit-editor-padding)] pl-[var(--jetedit-editor-padding)] cursor-text bg-[var(--jetedit-editor-background)] overflow-y-scroll">
       <component :is="EditorComponent" />
     </div>
 
-    <div class="jet_editor_controls py-[var(--jetedit-editor-padding)] flex flex-col gap-[var(--jetedit-editor-padding)]">
-      <div class="jet_editor_control flex gap-1" aria-label="History">
+    <div class="jet_edit_controls py-[var(--jetedit-editor-padding)] flex flex-col gap-[var(--jetedit-editor-padding)]">
+      <div class="jet_edit_control flex gap-1" aria-label="History">
         <Button
             variant="secondary"
             size="sm"
@@ -42,7 +42,7 @@ const props = defineProps<{
         </Button>
       </div>
 
-      <div class="jet_editor_control flex gap-1" aria-label="Text formatting">
+      <div class="jet_edit_control flex gap-1" aria-label="Text formatting">
         <Button
             size="sm"
             :variant="tiptap.isActive('bold') ? 'default' : 'secondary'"
@@ -71,7 +71,7 @@ const props = defineProps<{
         </Button>
       </div>
 
-      <div class="jet_editor_control flex gap-1" aria-label="Headings">
+      <div class="jet_edit_control flex gap-1" aria-label="Headings">
         <!--<Button-->
         <!--    size="sm"-->
         <!--    :variant="tiptap.isActive('paragraph') ? 'default' : 'secondary'"-->
@@ -113,7 +113,7 @@ const props = defineProps<{
         </Button>
       </div>
 
-      <div class="jet_editor_control flex gap-1" aria-label="Blocks">
+      <div class="jet_edit_control flex gap-1" aria-label="Blocks">
         <Button
             size="sm"
             :variant="tiptap.isActive('bulletList') ? 'default' : 'secondary'"
