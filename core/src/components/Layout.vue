@@ -56,14 +56,18 @@ watch(isEditingTitle, (val: boolean): void => {
 
     <div class="jetedit_layout_toolbar_wrapper w-[var(--jetedit-editor-controls-size)] absolute top-0 right-0 bottom-0 items-end overflow-x-hidden overflow-y-scroll">
       <div class="jetedit_layout_toolbar min-w-[var(--jetedit-editor-controls-size)]">
-        <div class="jetedit_layout_header h-[var(--jetedit-editor-header-height)] pl-[var(--jetedit-editor-controls-half-spacing)] pr-[var(--jetedit-editor-padding)] flex items-center cursor-default shrink-0">
+        <div class="jetedit_layout_header h-[var(--jetedit-editor-header-height)] pl-[var(--jetedit-editor-controls-half-spacing)] pr-[var(--jetedit-editor-padding)] flex justify-between items-center shrink-0">
           <b>Toolbar</b>
+
+          <slot name="toolbarAfterLabel">
+            <div data-ui="toolbarAfterLabel" />
+          </slot>
         </div>
 
-        <slot name="toolbar">
+        <slot name="toolbarInner">
           <div
               class="jetedit_layout_toolbar_inner py-[var(--jetedit-editor-padding)] pr-[var(--jetedit-editor-padding)] pl-[var(--jetedit-editor-controls-half-spacing)]"
-              data-ui="toolbar"
+              data-ui="toolbarInner"
           />
         </slot>
       </div>
