@@ -7,12 +7,12 @@ import Editor from '@/components/Editor.vue';
 
 // Constants
 
-const TOOLBAR_CLASSNAME = 'jetedit_layout_toolbar_inner';
+const TOOLBAR_SELECTOR = '[data-ui="toolbar"]';
 
 
 // Defining the variables
 
-const toolbarEl = ref<any>(document.querySelector('.' + TOOLBAR_CLASSNAME));
+const toolbarEl = ref<any>(document.querySelector(TOOLBAR_SELECTOR));
 
 </script>
 
@@ -20,7 +20,7 @@ const toolbarEl = ref<any>(document.querySelector('.' + TOOLBAR_CLASSNAME));
   <Editor class="jetedit_home_view h-full">
     <template #controls="{ tiptap }">
       <Teleport :to="toolbarEl">
-        <div class="jetedit_controls w-[var(--jetedit-editor-controls-size)] flex flex-col gap-[var(--jetedit-editor-padding)]">
+        <div class="jetedit_controls w-full flex flex-col gap-[var(--jetedit-editor-padding)]">
           <div class="jet_edit_control flex gap-1" aria-label="History">
             <Button
                 variant="secondary"

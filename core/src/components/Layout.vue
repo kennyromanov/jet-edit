@@ -1,29 +1,69 @@
 <script setup lang="ts">
 
+import { ref } from 'vue';
 import { Sidebar, PanelRight } from 'lucide-vue-next';
 import { Button } from '@/shadcn/components/ui/button';
+
+
+// Defining the variables
+
+const isSidebarShown = ref<boolean>(true);
+
+const isToolbarShown = ref<boolean>(true);
 
 </script>
 
 <template>
-  <div class="jetedit_layout flex overflow-y-hidden">
-    <div class="jetedit_layout_sidebar w-[25%]">
-      <div class="jetedit_layout_sidebar_header h-16 pl-[var(--jetedit-editor-padding)] pr-[var(--jetedit-editor-controls-half-gap)] flex items-center">
-        <b>JetEdit</b>
+  <div
+      class="jetedit_layout flex relative"
+      :data-sidebar="Number(isSidebarShown)"
+      :data-toolbar="Number(isToolbarShown)"
+  >
+    <div class="jetedit_layout_sidebar_wrapper w-[var(--jetedit-editor-controls-size)] absolute top-0 left-0 bottom-0 overflow-x-hidden overflow-y-scroll">
+      <div class="jetedit_layout_sidebar min-w-[var(--jetedit-editor-controls-size)]">
+        <div class="jetedit_layout_sidebar_header h-[var(--jetedit-editor-header-height)] pl-[var(--jetedit-editor-padding)] pr-[var(--jetedit-editor-controls-half-spacing)] flex items-center cursor-default shrink-0">
+          <b>JetEdit</b>
+        </div>
+
+        <div class="jetedit_layout_sidebar_inner py-[var(--jetedit-editor-padding)]  flex flex-col">
+          <Button
+              v-for="i in 5"
+              :key="i"
+              class="w-full h-10 justify-start"
+              variant="ghost"
+          >
+            Untitled.flext
+          </Button>
+        </div>
       </div>
     </div>
 
-    <main class="jetedit_layout_inner w-full h-full flex flex-col">
-      <div class="jetedit_layout_header h-16 px-[var(--jetedit-editor-header-padding)] flex justify-between items-center gap-4">
-        <div class="flex items-center gap-4">
-          <Button class="w-10 h-10" variant="ghost">
+    <div class="jetedit_layout_toolbar_wrapper w-[var(--jetedit-editor-controls-size)] absolute top-0 right-0 bottom-0 items-end overflow-x-hidden overflow-y-scroll">
+      <div class="jetedit_layout_toolbar min-w-[var(--jetedit-editor-controls-size)]">
+        <div class="jetedit_layout_header h-[var(--jetedit-editor-header-height)] pl-[var(--jetedit-editor-controls-half-spacing)] pr-[var(--jetedit-editor-padding)] flex items-center shrink-0">
+          <b>Toolbar</b>
+        </div>
+
+        <slot name="toolbar">
+          <div
+              class="jetedit_layout_toolbar_inner py-[var(--jetedit-editor-padding)] pr-[var(--jetedit-editor-padding)] pl-[var(--jetedit-editor-controls-half-spacing)]"
+              data-ui="toolbar"
+          />
+        </slot>
+      </div>
+    </div>
+
+    <main class="jetedit_layout_inner h-full absolute top-0 bottom-0 left-[var(--jetedit-editor-controls-size)] right-[var(--jetedit-editor-controls-size)] flex flex-col">
+      <div class="jetedit_layout_header h-[var(--jetedit-editor-header-height)] px-[var(--jetedit-editor-header-padding)] flex justify-between items-center gap-[var(--jetedit-editor-header-inner-gap)] shrink-0">
+        <div class="flex items-center gap-[var(--jetedit-editor-header-inner-gap)]">
+          <Button class="w-10 h-10" variant="ghost" @click="isSidebarShown = !isSidebarShown">
             <Sidebar />
           </Button>
 
           <b>Untitled.flext</b>
         </div>
 
-        <Button class="w-10 h-10" variant="ghost">
+        <Button class="w-10 h-10" variant="ghost" @click="isToolbarShown = !isToolbarShown">
           <PanelRight />
         </Button>
       </div>
@@ -32,22 +72,56 @@ import { Button } from '@/shadcn/components/ui/button';
         <slot />
       </div>
     </main>
-
-    <div class="jetedit_layout_toolbar w-[25%]">
-      <div class="jetedit_layout_header h-16 pl-[var(--jetedit-editor-controls-half-gap)] pr-[var(--jetedit-editor-padding)] flex items-center">
-        <b>Toolbar</b>
-      </div>
-
-      <div class="jetedit_layout_toolbar_inner py-[var(--jetedit-editor-padding)] pr-[var(--jetedit-editor-padding)] pl-[var(--jetedit-editor-controls-half-gap)]" />
-    </div>
   </div>
 </template>
 
 <style>
 
 .jetedit_layout {
-  --jetedit-editor-controls-half-gap: calc(0.5 * var(--jetedit-editor-controls-gap));
-  --jetedit-editor-header-padding: calc(var(--jetedit-editor-controls-half-gap) - 0.85em);
+  --jetedit-editor-controls-half-spacing: calc(0.5 * var(--jetedit-editor-controls-spacing));
+  --jetedit-editor-header-icon-padding: 0.75rem;
+  --jetedit-editor-header-padding: calc(var(--jetedit-editor-controls-half-spacing) - var(--jetedit-editor-header-icon-padding));
+  --jetedit-editor-header-icon-height: 2.5rem;
+  --jetedit-editor-header-height: calc(2 * var(--jetedit-editor-header-padding) + var(--jetedit-editor-header-icon-height));
+  --jetedit-editor-header-inner-gap: calc(var(--jetedit-editor-padding) / 1.6);
+
+
+  &[data-sidebar="0"] {
+    .jetedit_layout_sidebar_wrapper {
+      width: 0;
+    }
+
+    .jetedit_layout_inner {
+      left: 0;
+    }
+  }
+
+  &[data-toolbar="0"] {
+    .jetedit_layout_inner {
+      right: 0;
+    }
+
+    .jetedit_layout_toolbar_wrapper {
+      width: 0;
+    }
+  }
+
+
+  .jetedit_layout_sidebar_wrapper,
+  .jetedit_layout_toolbar_wrapper {
+    transition: width 0.3s;
+  }
+
+  .jetedit_layout_inner {
+    transition: left 0.3s, right 0.3s;
+  }
+
+  .jetedit_layout_sidebar {
+    .jetedit_layout_sidebar_inner {
+      padding-right: calc(var(--jetedit-editor-controls-half-spacing) - 1rem);
+      padding-left: calc(var(--jetedit-editor-padding) - 1rem);
+    }
+  }
 }
 
 </style>

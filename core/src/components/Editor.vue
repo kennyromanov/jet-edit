@@ -17,7 +17,7 @@ const props = defineProps<{
       v-slot="{ EditorComponent, tiptap }"
   >
     <slot :EditorComponent="EditorComponent" :tiptap="tiptap">
-      <div class="jetedit_editor_inner w-full h-full py-[var(--jetedit-editor-padding)] px-[var(--jetedit-editor-controls-half-gap)] cursor-text overflow-y-scroll">
+      <div class="jetedit_editor_inner w-full h-full py-[var(--jetedit-editor-padding)] px-[var(--jetedit-editor-controls-half-spacing)] cursor-text overflow-y-scroll">
         <component :is="EditorComponent" />
       </div>
 

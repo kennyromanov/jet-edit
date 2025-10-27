@@ -46,9 +46,9 @@
 
     /* Custom */
 
-    --jetedit-editor-padding: 1.5em;
-    --jetedit-editor-controls-size: 25%;
-    --jetedit-editor-controls-gap: calc(1.6 * var(--jetedit-editor-padding));
+    --jetedit-editor-padding: 2em;
+    --jetedit-editor-controls-size: 20%;
+    --jetedit-editor-controls-spacing: calc(1.6 * var(--jetedit-editor-padding));
 }
 
 .dark {
