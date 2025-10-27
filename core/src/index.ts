@@ -4,7 +4,6 @@ import { useI18nCache, useI18nReactivity } from '@/i18n/lib';
 import store from '@/pinia/store';
 import i18n from '@/i18n';
 import router from '@/router';
-import Editor from '@/components/Editor.vue';
 import App from './App.vue';
 import './index.css';
 
@@ -59,5 +58,3 @@ export function createEditor(el: string | HTMLElement): Obj {
 
 
 export default createEditor;
-
-export { Editor };

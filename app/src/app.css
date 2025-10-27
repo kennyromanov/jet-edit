@@ -4,7 +4,10 @@
 
 @layer base {
     html, body, #app {
-        @apply min-h-screen;
+        @apply h-screen;
+    }
+    html {
+        @apply text-[18px];
     }
     body {
         @apply bg-transparent;

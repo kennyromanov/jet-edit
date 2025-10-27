@@ -19,8 +19,8 @@
     "shadcn": "bin/shadcn",
     "start": "bin/start",
     "build:types": "vue-tsc --noEmit false && tsc-alias",
-    "build:css": "tailwindcss -i ./src/index.css -o ./dist/index.css --minify",
-    "build": "vite build && npm run build:types && npm run build:css",
+    "build-only": "vite build",
+    "build": "npm run build-only && npm run build:types",
     "prepare": "npm run build"
   },
   "files": [

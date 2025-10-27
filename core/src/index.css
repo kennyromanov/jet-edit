@@ -4,7 +4,7 @@
 @import "vue-sonner/style.css";
 
 
-/* System Styles */
+/* Base styles */
 
 @custom-variant dark (&:is(.dark *));
 
@@ -34,7 +34,7 @@
     --chart-4: oklch(0.828 0.189 84.429);
     --chart-5: oklch(0.769 0.188 70.08);
     --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
+    --sidebar: oklch(0 0 0 / 0);
     --sidebar-foreground: oklch(0.145 0 0);
     --sidebar-primary: oklch(0.205 0 0);
     --sidebar-primary-foreground: oklch(0.985 0 0);
@@ -47,9 +47,8 @@
     /* Custom */
 
     --jetedit-editor-padding: 1.5em;
-    --jetedit-editor-controls-size: 30%;
-    --jetedit-editor-controls-gap: calc(2 * 1.6 * var(--jetedit-editor-padding));
-    --jetedit-editor-background: #002a5506;
+    --jetedit-editor-controls-size: 25%;
+    --jetedit-editor-controls-gap: calc(1.6 * var(--jetedit-editor-padding));
 }
 
 .dark {
@@ -148,20 +147,10 @@
 }
 
 
-/* Base Styles */
+/* Editor styles */
 
-.jet_edit {
-    --jetedit-editor-controls-half-gap: calc(0.5 * var(--jetedit-editor-controls-gap));
-
-
-    .jet_edit_controls {
-        padding-left: var(--jetedit-editor-controls-half-gap);
-        padding-right: var(--jetedit-editor-controls-half-gap);
-    }
-
-    .jet_edit_inner {
-        padding-right: var(--jetedit-editor-controls-half-gap);
-
+.jetedit_editor {
+    .jetedit_editor_inner {
         h1, h2, h3 {
             margin-top: 2.5rem;
             margin-bottom: 1.5rem;
@@ -182,7 +171,7 @@
         }
 
         h3 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
         }
 
         h4, h5, h6 {
