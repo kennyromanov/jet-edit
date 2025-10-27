@@ -1,15 +1,31 @@
 <script setup lang="ts">
 
-import { ref } from 'vue';
+import { ref, watch, nextTick } from 'vue';
 import { Sidebar, PanelRight } from 'lucide-vue-next';
+import { Input } from '@/shadcn/components/ui/input';
 import { Button } from '@/shadcn/components/ui/button';
 
 
 // Defining the variables
 
+const titleInput = ref<any>(null);
+
 const isSidebarShown = ref<boolean>(true);
 
 const isToolbarShown = ref<boolean>(true);
+
+const isEditingTitle = ref<boolean>(false);
+
+
+// Defining the watchers
+
+watch(isEditingTitle, (val: boolean): void => {
+  if (!val) return;
+
+  nextTick(() => {
+    titleInput.value?.$el?.focus();
+  });
+});
 
 </script>
 
@@ -40,7 +56,7 @@ const isToolbarShown = ref<boolean>(true);
 
     <div class="jetedit_layout_toolbar_wrapper w-[var(--jetedit-editor-controls-size)] absolute top-0 right-0 bottom-0 items-end overflow-x-hidden overflow-y-scroll">
       <div class="jetedit_layout_toolbar min-w-[var(--jetedit-editor-controls-size)]">
-        <div class="jetedit_layout_header h-[var(--jetedit-editor-header-height)] pl-[var(--jetedit-editor-controls-half-spacing)] pr-[var(--jetedit-editor-padding)] flex items-center shrink-0">
+        <div class="jetedit_layout_header h-[var(--jetedit-editor-header-height)] pl-[var(--jetedit-editor-controls-half-spacing)] pr-[var(--jetedit-editor-padding)] flex items-center cursor-default shrink-0">
           <b>Toolbar</b>
         </div>
 
@@ -55,12 +71,27 @@ const isToolbarShown = ref<boolean>(true);
 
     <main class="jetedit_layout_inner h-full absolute top-0 bottom-0 left-[var(--jetedit-editor-controls-size)] right-[var(--jetedit-editor-controls-size)] flex flex-col">
       <div class="jetedit_layout_header h-[var(--jetedit-editor-header-height)] px-[var(--jetedit-editor-header-padding)] flex justify-between items-center gap-[var(--jetedit-editor-header-inner-gap)] shrink-0">
-        <div class="flex items-center gap-[var(--jetedit-editor-header-inner-gap)]">
+        <div class="w-full flex items-center gap-[var(--jetedit-editor-header-inner-gap)]">
           <Button class="w-10 h-10" variant="ghost" @click="isSidebarShown = !isSidebarShown">
             <Sidebar />
           </Button>
 
-          <b>Untitled.flext</b>
+          <Input
+              v-if="isEditingTitle"
+              class="font-medium"
+              model-value="Untitled.flext"
+              @blur="isEditingTitle = false"
+              @keydown.enter="isEditingTitle = false"
+              ref="titleInput"
+          />
+
+          <div
+              v-else
+              class="w-full cursor-text"
+              @click="isEditingTitle = true"
+          >
+            <b>Untitled.flext</b>
+          </div>
         </div>
 
         <Button class="w-10 h-10" variant="ghost" @click="isToolbarShown = !isToolbarShown">
