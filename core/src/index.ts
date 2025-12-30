@@ -1,9 +1,8 @@
-import { createApp, watch } from 'vue';
+import { createApp } from 'vue';
 import { createI18n } from 'vue-i18n';
 import { createRouter } from 'vue-router';
-import { createPinia, storeToRefs } from 'pinia';
+import { createPinia } from 'pinia';
 import { Obj, Locale, Document, GetDocumentHandler, GetDocumentByIdHandler } from '@/types';
-import { Cache } from '@/lib';
 import { DEFAULT_LANG, MESSAGES } from '@/i18n';
 import { history, routes } from '@/router';
 import * as types from '@/types';
@@ -23,6 +22,7 @@ export function createEditor(el: string | HTMLElement, options: Obj = {}): Obj {
 
     // Getting the options
 
+    const lang: Locale = options?.lang ?? DEFAULT_LANG;
     const getDocumentHandler: GetDocumentHandler | null = options?.getDocument ?? null;
     const getDocumentByIdHandler: GetDocumentByIdHandler | null = options?.getDocumentById ?? null;
 
@@ -47,12 +47,9 @@ export function createEditor(el: string | HTMLElement, options: Obj = {}): Obj {
     const appStore = store.useApp();
 
 
-    // Getting the i18n
-
-    const cachedLang = Cache.get('lang');
-
-
     // Updating the data
+
+    appStore.setLang(lang);
 
     if (getDocumentHandler)
         appStore.setOnGetDocument(getDocumentHandler);
@@ -60,28 +57,12 @@ export function createEditor(el: string | HTMLElement, options: Obj = {}): Obj {
     if (getDocumentByIdHandler)
         appStore.setOnGetDocumentById(getDocumentByIdHandler);
 
-    if (cachedLang)
-        appStore.setLang(cachedLang);
-
-
-    // Defining the variables
-
-    const { lang } = storeToRefs(appStore);
-
 
     // Defining the functions
 
     const updIsMobile = (): void => appStore.setIsMobile(window.innerWidth < MOBILE_WIDTH);
 
     const clear = () => window.removeEventListener('resize', updIsMobile);
-
-
-    // Defining the watchers
-
-    watch(lang, (val: Locale): void => {
-        i18n.global.locale = val;
-        Cache.set('lang', val, true);
-    }, { immediate: true });
 
 
     // Mounting the app

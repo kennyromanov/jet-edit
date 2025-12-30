@@ -50,7 +50,7 @@ export type LoadDocument = SimpleDocument & {
 };
 
 export type Document = SimpleDocument & {
-    data: Obj,
+    data: string,
 };
 
 

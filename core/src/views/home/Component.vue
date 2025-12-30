@@ -1,10 +1,18 @@
 <script setup lang="ts">
 
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { storeToRefs } from 'pinia';
 import { Undo, Redo, Bold, Italic, Underline, Strikethrough } from 'lucide-vue-next';
+import { isset } from '@/lib';
 import { Button } from '@/shadcn/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/components/ui/select';
+import store from '@/pinia/store';
 import Editor from '@/components/Editor.vue';
+
+
+// Third-parties
+
+const appStore = store.useApp();
 
 
 // Types
@@ -21,8 +29,9 @@ const TOOLBAR_LABEL_SELECTOR = '[data-ui="toolbarAfterLabel"]';
 
 // Defining the variables
 
+const appStoreRefs = storeToRefs(appStore);
+const _document = appStoreRefs.document;
 const toolbarEl = ref<any>(document.querySelector(TOOLBAR_SELECTOR));
-
 const toolbarLabelEl = ref<any>(document.querySelector(TOOLBAR_LABEL_SELECTOR));
 
 
@@ -71,10 +80,40 @@ const setHeading = (val: Heading, tiptap: any): void => {
   }
 };
 
+
+// Defining the computed
+
+const val = computed({
+  get(): string|null {
+    return _document.value?.data ?? null;
+  },
+  set(data: string|null): void {
+
+    // Doing some checks
+
+    if (!isset(data)) {
+      _document.value = null;
+      return;
+    }
+
+    if (!isset(_document.value)) {
+      // @ts-ignore
+      appStore.addDocument({});
+      // @ts-ignore
+      appStore.setDocument({ data });
+
+      return;
+    }
+
+
+    _document.value = { ..._document.value, data };
+  },
+});
+
 </script>
 
 <template>
-  <Editor class="jetedit_home_view h-full">
+  <Editor class="jetedit_home_view h-full" v-model="val">
     <template #controls="{ tiptap }">
       <Teleport :to="toolbarLabelEl">
         <div class="jetedit_control flex select-none" aria-label="History">
@@ -215,7 +254,7 @@ const setHeading = (val: Heading, tiptap: any): void => {
 
 .jetedit_control {
   &[data-active="1"] {
-    background: oklch(0.928 0.006 264.531);
+    background: #4E5F7C33;
   }
 }
 

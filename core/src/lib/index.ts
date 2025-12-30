@@ -6,8 +6,6 @@ import store from '@/pinia/store';
 
 // Constants
 
-export const DEFAULT_STORAGE_PREFIX = 'jetedit';
-
 export const DEFAULT_FILE_NAME = 'unknown';
 
 export const DEFAULT_TIMEOUT = 30 * 1000;
@@ -17,124 +15,26 @@ export const DEFAULT_TICK = 500;
 
 // Classes
 
-export class Storage {
-    public static prefix: string = DEFAULT_STORAGE_PREFIX;
-
-    public static fullKey(name: string): string {
-        return this.prefix + '__' + name;
-    }
-
-    public static shortKey(name: string): string {
-        const fullKey = this.fullKey('');
-
-        return name.slice(fullKey.length);
-    }
-
-    public static keys(): string[] {
-        const prefix = this.fullKey('');
-        const fullKeys = Object.keys(localStorage);
-        const result: string[] = [];
-
-        for (const fullKey of fullKeys)
-            if (fullKey.startsWith(prefix))
-                result.push(this.shortKey(fullKey));
-
-        return result;
-    }
-
-    public static get(name: string): types.Storable | null {
-        const key = this.fullKey(name);
-        let result: types.Storable | null = localStorage.getItem(key);
-
-
-        // Doing some checks
-
-        if (!result) return null;
-
-
-        // If the value is a JSON
-
-        const obj = unserialize(result, false);
-
-        if (obj !== null) return obj;
-
-
-        // If the value is a number
-
-        const isNum = isNumber(result);
-
-        if (isNum) return Number(result);
-
-
-        return result;
-    }
-
-    public static set(name: string, value: types.Storable): void {
-        const key = this.fullKey(name);
-        let result: string = String(value);
-
-
-        // If the value is an object
-
-        const isObj = isObject(value);
-
-        if (isObj) {
-            const obj = serialize(value, false);
-
-            if (isset(obj)) result = obj;
-        }
-
-
-        localStorage.setItem(key, result);
-    }
-
-    public static del(name: string): void {
-        const key = this.fullKey(name);
-
-        localStorage.removeItem(key);
-    }
-}
-
 export class Cache {
     public static get(name: string): any {
         const cacheStore = store.useCache();
-        return cacheStore.get(name) ?? Storage.get(name);
+        return cacheStore.get(name);
     }
 
-    public static set(name: string, value: any, keep: boolean = false): void {
-
-        // Updating the data
-
+    public static set(name: string, value: any): void {
         const cacheStore = store.useCache();
-
         cacheStore.set(name, value);
-
-
-        // Updating the data in ROM immediately
-
-        if (keep) {
-            Storage.set(name, value);
-            return;
-        }
-
-
-        // Otherwise - update the data in RAM
-
-        Storage.del(name);
     }
 
     public static del(name: string): void {
         const cacheStore = store.useCache();
-
         cacheStore.del(name);
-
-        Storage.del(name);
     }
 
-    public static store(value: any, keep: boolean = false): string {
+    public static store(value: any): string {
         const id = nanoid();
 
-        this.set(id, value, keep);
+        this.set(id, value);
 
         return id;
     }
