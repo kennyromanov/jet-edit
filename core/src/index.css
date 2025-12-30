@@ -49,6 +49,12 @@
     --jetedit-editor-padding: 2em;
     --jetedit-editor-controls-size: 20%;
     --jetedit-editor-controls-spacing: calc(1.6 * var(--jetedit-editor-padding));
+    --jetedit-editor-controls-half-spacing: calc(0.5 * var(--jetedit-editor-controls-spacing));
+    --jetedit-editor-header-icon-padding: 0.75rem;
+    --jetedit-editor-header-padding: calc(var(--jetedit-editor-controls-half-spacing) - var(--jetedit-editor-header-icon-padding));
+    --jetedit-editor-header-icon-height: 2.5rem;
+    --jetedit-editor-header-height: calc(2 * var(--jetedit-editor-header-padding) + var(--jetedit-editor-header-icon-height));
+    --jetedit-editor-header-inner-gap: calc(var(--jetedit-editor-padding) / 1.6);
 }
 
 .dark {
@@ -148,6 +154,12 @@
 
 
 /* Editor styles */
+
+.jetedit {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
 
 .jetedit_editor {
     .jetedit_editor_inner {

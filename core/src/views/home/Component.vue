@@ -211,7 +211,7 @@ const setHeading = (val: Heading, tiptap: any): void => {
   </Editor>
 </template>
 
-<style>
+<style scoped>
 
 .jetedit_control {
   &[data-active="1"] {

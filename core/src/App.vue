@@ -7,7 +7,7 @@ import Layout from '@/components/Layout.vue';
 </script>
 
 <template>
-  <Layout class="h-full">
+  <Layout class="jetedit h-full">
     <RouterView />
   </Layout>
 

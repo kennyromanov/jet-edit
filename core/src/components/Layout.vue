@@ -1,30 +1,69 @@
 <script setup lang="ts">
 
 import { ref, watch, nextTick } from 'vue';
-import { Sidebar, PanelRight } from 'lucide-vue-next';
+import { storeToRefs } from 'pinia';
+import { Sidebar, PanelRight, Plus } from 'lucide-vue-next';
+import { ensureAsync } from '@/lib';
 import { Input } from '@/shadcn/components/ui/input';
 import { Button } from '@/shadcn/components/ui/button';
+import store from '@/pinia/store';
+
+
+// Third-parties
+
+const appStore = store.useApp();
 
 
 // Defining the variables
 
+const { documents, document, getDocumentHandler } = storeToRefs(appStore);
 const titleInput = ref<any>(null);
-
 const isSidebarShown = ref<boolean>(true);
-
 const isToolbarShown = ref<boolean>(true);
-
 const isEditingTitle = ref<boolean>(false);
+
+
+// Defining the functions
+
+const onOpenFile = async (): Promise<void> => {
+
+  // Getting the handler
+
+  const handler = getDocumentHandler.value ?? null;
+
+  if (!handler) {
+    console.warn(`Unable to open file: The 'getDocument' handler is not set`);
+    return;
+  }
+
+
+  // Getting the document
+
+  const handle = ensureAsync(handler);
+
+  const document = await handle();
+
+  if (!document) {
+    console.log('Unable to open file: The handler returned nothing');
+    return;
+  }
+
+
+  // Updating the data
+
+  appStore.addDocument(document);
+  appStore.setDocument(document);
+};
 
 
 // Defining the watchers
 
-watch(isEditingTitle, (val: boolean): void => {
+watch(isEditingTitle, async (val: boolean): Promise<void> => {
   if (!val) return;
 
-  nextTick(() => {
-    titleInput.value?.$el?.focus();
-  });
+  await nextTick();
+
+  titleInput.value?.$el?.focus();
 });
 
 </script>
@@ -43,12 +82,21 @@ watch(isEditingTitle, (val: boolean): void => {
 
         <div class="jetedit_layout_sidebar_inner py-[var(--jetedit-editor-padding)]  flex flex-col">
           <Button
-              v-for="i in 5"
+              v-for="(document, i) of documents"
               :key="i"
               class="w-full h-10 justify-start"
               variant="ghost"
           >
-            Untitled.flext
+            {{ document?.name ?? 'Unknown Document' }}
+          </Button>
+
+          <Button
+              class="w-full h-10 justify-start text-[#4E5F7C9F]"
+              variant="ghost"
+              @click="onOpenFile"
+          >
+            <Plus />
+            Open File
           </Button>
         </div>
       </div>
@@ -94,7 +142,7 @@ watch(isEditingTitle, (val: boolean): void => {
               class="w-full cursor-text"
               @click="isEditingTitle = true"
           >
-            <b>Untitled.flext</b>
+            <b>{{ document?.name ?? 'Unknown Document' }}</b>
           </div>
         </div>
 
@@ -110,17 +158,9 @@ watch(isEditingTitle, (val: boolean): void => {
   </div>
 </template>
 
-<style>
+<style scoped>
 
 .jetedit_layout {
-  --jetedit-editor-controls-half-spacing: calc(0.5 * var(--jetedit-editor-controls-spacing));
-  --jetedit-editor-header-icon-padding: 0.75rem;
-  --jetedit-editor-header-padding: calc(var(--jetedit-editor-controls-half-spacing) - var(--jetedit-editor-header-icon-padding));
-  --jetedit-editor-header-icon-height: 2.5rem;
-  --jetedit-editor-header-height: calc(2 * var(--jetedit-editor-header-padding) + var(--jetedit-editor-header-icon-height));
-  --jetedit-editor-header-inner-gap: calc(var(--jetedit-editor-padding) / 1.6);
-
-
   &[data-sidebar="0"] {
     .jetedit_layout_sidebar_wrapper {
       width: 0;

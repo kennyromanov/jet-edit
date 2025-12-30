@@ -1,21 +1,14 @@
 import { nanoid } from 'nanoid';
-import { Obj, Storable, Serializable, MaybePromise, Auth, Session, BreakerHandler } from '@/types';
-import { BaseError, PotentialLoopWarning } from '@/errors';
+import { PotentialLoopWarning } from '@/errors';
+import * as types from '@/types';
 import store from '@/pinia/store';
-
-
-// Third-parties
-
-const appStore = store.useApp();
-
-const cacheStore = store.useCache();
 
 
 // Constants
 
 export const DEFAULT_STORAGE_PREFIX = 'jetedit';
 
-export const DEFAULT_SESSION_EXPIRATION_PERIOD = 30 * 24 * 60 * 60 * 1000;
+export const DEFAULT_FILE_NAME = 'unknown';
 
 export const DEFAULT_TIMEOUT = 30 * 1000;
 
@@ -49,9 +42,9 @@ export class Storage {
         return result;
     }
 
-    public static get(name: string): Storable | null {
+    public static get(name: string): types.Storable | null {
         const key = this.fullKey(name);
-        let result: Storable | null = localStorage.getItem(key);
+        let result: types.Storable | null = localStorage.getItem(key);
 
 
         // Doing some checks
@@ -76,7 +69,7 @@ export class Storage {
         return result;
     }
 
-    public static set(name: string, value: Storable): void {
+    public static set(name: string, value: types.Storable): void {
         const key = this.fullKey(name);
         let result: string = String(value);
 
@@ -104,14 +97,20 @@ export class Storage {
 
 export class Cache {
     public static get(name: string): any {
+        const cacheStore = store.useCache();
         return cacheStore.get(name) ?? Storage.get(name);
     }
 
     public static set(name: string, value: any, keep: boolean = false): void {
+
+        // Updating the data
+
+        const cacheStore = store.useCache();
+
         cacheStore.set(name, value);
 
 
-        // Store the data in ROM immediately
+        // Updating the data in ROM immediately
 
         if (keep) {
             Storage.set(name, value);
@@ -119,13 +118,16 @@ export class Cache {
         }
 
 
-        // Otherwise - move the data to RAM
+        // Otherwise - update the data in RAM
 
         Storage.del(name);
     }
 
     public static del(name: string): void {
+        const cacheStore = store.useCache();
+
         cacheStore.del(name);
+
         Storage.del(name);
     }
 
@@ -139,117 +141,44 @@ export class Cache {
 }
 
 
-// System Functions
-
-export function audit(val: any): string {
-    switch (typeof val) {
-        case 'string':
-            return `'${val}'`;
-        case 'object':
-            return JSON.stringify(val);
-        default:
-            return String(val);
-    }
-}
-
-export async function auth(val: Auth): Promise<void> {
-
-    // If the auth was not successful
-
-    const isSuccessful = !!val?.isSuccessful;
-
-    if (!isSuccessful) {
-        const reason = val?.reason ?? 'Unknown Reason';
-        throw new BaseError(`Unable to authenticate: The Sign In failed: ${reason}`);
-    }
-
-
-    // Parsing the login
-
-    const userId = val?.userId ?? null;
-    const firstName = val?.username ?? '-';
-    const lastName = val?.username ?? '-';
-    const fullName = val?.username ?? '-';
-    const phone = val?.username ?? null;
-    const token = val?.token ?? null;
-    const permissions = [ 'documents.view', 'documents.create' ];
-    const expiresAt = new Date(time() + DEFAULT_SESSION_EXPIRATION_PERIOD);
-
-
-    // Doing some checks
-
-    const bad = (param: string) => new BaseError(`TCT: Unable to authenticate: The '${param}' param is not set: ${audit(val)}`);
-
-    if (!userId)
-        throw bad('userId');
-
-    if (!phone)
-        throw bad('username');
-
-    if (!token)
-        throw bad('token');
-
-
-    // Getting the session
-
-    const session: Session = { userId, firstName, lastName, fullName, phone, token, permissions, expiresAt };
-
-
-    // Setting the session
-
-    appStore.setSession(session);
-
-    Cache.set('session', session, true);
-}
-
-
 // Checking Functions
 
-export function isNumber(val: any): val is number {
-    return !isNaN(val);
+export function inarr<T extends any, A extends any[]>(val: T, ...arr: A): types.Inarr<T, A> {
+    return arr.includes(val) as types.Inarr<T, A>;
 }
 
-export function isArray<T>(val: T): val is T & any[] {
-    return Array.isArray(val);
+export function has<T extends types.Obj, K extends keyof T>(obj: T, key: K): types.Has<T, K> {
+    return obj.hasOwnProperty(key) as types.Has<T, K>;
 }
 
-export function isObject(val: any): boolean {
-    return typeof val === 'object' && val !== null;
+export function isset<T extends any>(val: T): types.Isset<T> {
+    return !inarr(val, null, undefined) as types.Isset<T>;
 }
 
-export function isEmpty(val: any[] | object | string): boolean {
-    const isEmptyStr = val === '';
-    const isEmptyArr = isArray(val) && val.length === 0;
-    const isEmptyObj = isObject(val) && Object.keys(val).length === 0;
+export function isNumber<T extends any>(val: T): types.IsNumber<T> {
+    return (isset(val) && !isNaN(Number(val))) as types.IsNumber<T>;
+}
 
-    return isEmptyStr || isEmptyArr || isEmptyObj;
+export function isObject<T extends any>(val: T): types.IsObject<T> {
+    return (typeof val === 'object' && val !== null) as types.IsObject<T>;
 }
 
 
 // Framework Functions
 
+export function audit(val: any): string {
+    if (isObject(val))
+        return JSON.stringify(val);
+
+    else if (typeof val === 'string')
+        return `'${val}'`;
+
+    else
+        return String(val);
+}
+
 export function time(): number {
     return Date.now();
-}
-
-export function isset<T>(val: T): val is NonNullable<T> {
-    return val !== null && val !== undefined;
-}
-
-export function inarr(val: any, ...arr: any): boolean {
-    return arr.includes(val);
-}
-
-export function has(obj: Obj, key: string): boolean {
-    return obj.hasOwnProperty(key);
-}
-
-export function matches(arr: any[], arrRef: any[]): boolean {
-    for (const item of arrRef)
-        if (!arr.includes(item))
-            return false;
-
-    return true;
 }
 
 export function unslash(path: string): string {
@@ -270,7 +199,7 @@ export function slash(path: string): string {
     return '/'+result;
 }
 
-export function serialize(obj: Storable, logError: boolean = true): string|null {
+export function serialize(obj: types.Storable, logError: boolean = true): string|null {
     let result: string|null = null;
 
     try {
@@ -283,8 +212,8 @@ export function serialize(obj: Storable, logError: boolean = true): string|null 
     return result;
 }
 
-export function unserialize(val: string, logError: boolean = true): Serializable | null {
-    let result: Serializable | null = null;
+export function unserialize(val: string, logError: boolean = true): types.Serializable | null {
+    let result: types.Serializable | null = null;
 
     try {
         result = JSON.parse(val);
@@ -301,7 +230,7 @@ export function base64(val: string): string {
     return btoa(String.fromCharCode(...array));
 }
 
-export function encodeBase64(file: File): Promise<string> {
+export function fileToBase64(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
 
@@ -315,7 +244,7 @@ export function encodeBase64(file: File): Promise<string> {
     });
 }
 
-export function decodeBase64(val: string, filename = 'index'): File {
+export function base64ToFile(val: string, filename = DEFAULT_FILE_NAME): File {
     const [ meta, base64 ] = val?.split(',') ?? '';
 
     const matches = meta?.match(/data:(.*);base64/);
@@ -328,7 +257,7 @@ export function decodeBase64(val: string, filename = 'index'): File {
     return new File([ array ], filename, { type: mime });
 }
 
-export function ensurePromise<T = any>(val: MaybePromise): () => Promise<T> {
+export function ensurePromise<T extends any = any>(val: types.MaybePromise): Promise<T> {
     return new Promise((resolve, reject) => {
         const isAsync = val instanceof Promise;
 
@@ -336,14 +265,14 @@ export function ensurePromise<T = any>(val: MaybePromise): () => Promise<T> {
             val.then(resolve).catch(reject);
         else
             resolve(val);
-    }) as any;
+    }) as Promise<T>;
 }
 
-export function ensureAsync<T = any>(val: any): () => Promise<T> {
-    return (...args: any[]) => ensurePromise(val(...args)) as any;
+export function ensureAsync<T extends any = any>(val: any): (...val: any[]) => Promise<T> {
+    return (...args: any[]) => ensurePromise<T>(val(...args));
 }
 
-export function loop(breaker: BreakerHandler, timeout: number = DEFAULT_TIMEOUT, tick: number = DEFAULT_TICK): Promise<void> {
+export function loop(breaker: types.BreakerHandler, timeout: number = DEFAULT_TIMEOUT, tick: number = DEFAULT_TICK): Promise<void> {
     return new Promise((resolve, reject) => {
         const end = time() + timeout;
 
