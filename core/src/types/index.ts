@@ -41,15 +41,19 @@ export type DocumentData = Obj;
 // Specific Struct Types
 
 export type SimpleDocument = {
-    id: string,
     name: string,
 };
 
-export type LoadDocument = SimpleDocument & {
-    get: DocumentDataLoader,
+export type DocumentRecord = SimpleDocument & {
+    id: string,
 };
 
-export type Document = SimpleDocument & {
+export type Document = DocumentRecord & {
+    id: string,
+    data: string,
+};
+
+export type UpdateDocumentPayload = SimpleDocument & {
     data: string,
 };
 
@@ -58,8 +62,10 @@ export type Document = SimpleDocument & {
 
 export type BreakerHandler = () => MaybePromise<boolean>;
 
-export type DocumentDataLoader = Loader<DocumentData>;
+export type SelectDocumentHandler = () => MaybePromise<Document | null>;
 
-export type GetDocumentHandler = Loader<Document | null>;
+export type GetDocumentHandler = (id: string) => MaybePromise<Document | null>;
 
-export type GetDocumentByIdHandler = (id: string) => MaybePromise<Document | null>;
+export type UpdateDocumentHandler = (id: string, val: UpdateDocumentPayload) => MaybePromise<void>;
+
+export type SaveDocumentHandler = (id: string, val: UpdateDocumentPayload) => MaybePromise<void>;

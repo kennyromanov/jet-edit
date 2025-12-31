@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia';
-import { Obj, Locale, LoadDocument, Document, GetDocumentHandler, GetDocumentByIdHandler } from '@/types';
+import { Obj, Locale, DocumentRecord, Document, UpdateDocumentPayload, SelectDocumentHandler, GetDocumentHandler, UpdateDocumentHandler, SaveDocumentHandler } from '@/types';
+import { isset } from '@/lib';
+import { BaseError } from '@/errors';
 
 export default defineStore('app', {
   state: (): Obj => ({
@@ -7,8 +9,10 @@ export default defineStore('app', {
 
     documents: null,
     document: null,
+    selectDocumentHandler: null,
     getDocumentHandler: null,
-    getDocumentByIdHandler: null,
+    updDocumentHandler: null,
+    saveDocumentHandler: null,
 
     isMobile: null,
 
@@ -28,15 +32,23 @@ export default defineStore('app', {
 
     // Documents
 
-    getDocuments(): LoadDocument[] | null {
+    getDocuments(): DocumentRecord[] | null {
       return this.documents;
     },
-    setDocuments(val: LoadDocument[]): void {
+    setDocuments(val: DocumentRecord[]): void {
       this.documents = val;
     },
-    addDocument(val: LoadDocument): void {
+    addDocument(val: DocumentRecord): void {
       if (!this.documents) this.documents = [];
       this.documents.push(val);
+    },
+    updDocumentById(id: string, val: UpdateDocumentPayload): void {
+      const index = this.documents?.findIndex(d => d?.id === id) ?? null;
+
+      if (isset(index) && index >= 0)
+        this.documents[index] = { id, ...val };
+      else
+        throw new BaseError(`Unable to update document: documentID '${id}' does not exist`);
     },
     getDocument(): Document | null {
       return this.document;
@@ -44,17 +56,29 @@ export default defineStore('app', {
     setDocument(val: Document): void {
       this.document = val;
     },
+    getOnSelectDocument(): SelectDocumentHandler | null {
+      return this.selectDocumentHandler;
+    },
+    setOnSelectDocument(val: SelectDocumentHandler): void {
+      this.selectDocumentHandler = val;
+    },
     getOnGetDocument(): GetDocumentHandler | null {
       return this.getDocumentHandler;
     },
     setOnGetDocument(val: GetDocumentHandler): void {
       this.getDocumentHandler = val;
     },
-    getOnGetDocumentById(): GetDocumentByIdHandler | null {
-      return this.getDocumentByIdHandler;
+    getOnUpdDocument(): UpdateDocumentHandler | null {
+      return this.updDocumentHandler;
     },
-    setOnGetDocumentById(val: GetDocumentByIdHandler): void {
-      this.getDocumentByIdHandler = val;
+    setOnUpdDocument(val: UpdateDocumentHandler): void {
+      this.updDocumentHandler = val;
+    },
+    getOnSaveDocument(): SaveDocumentHandler | null {
+      return this.saveDocumentHandler;
+    },
+    setOnSaveDocument(val: SaveDocumentHandler): void {
+      this.saveDocumentHandler = val;
     },
 
 

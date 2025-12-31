@@ -1,9 +1,9 @@
 <script setup lang="ts">
 
-import { ref, watch, nextTick } from 'vue';
+import { ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { Sidebar, PanelRight, Plus } from 'lucide-vue-next';
-import { ensureAsync } from '@/lib';
+import { audit, isset, ensureAsync } from '@/lib';
 import { Input } from '@/shadcn/components/ui/input';
 import { Button } from '@/shadcn/components/ui/button';
 import store from '@/pinia/store';
@@ -16,7 +16,7 @@ const appStore = store.useApp();
 
 // Defining the variables
 
-const { documents, document, getDocumentHandler } = storeToRefs(appStore);
+const { documents, document, selectDocumentHandler } = storeToRefs(appStore);
 const titleInput = ref<any>(null);
 const isSidebarShown = ref<boolean>(true);
 const isToolbarShown = ref<boolean>(true);
@@ -25,11 +25,11 @@ const isEditingTitle = ref<boolean>(false);
 
 // Defining the functions
 
-const onOpenFile = async (): Promise<void> => {
+const onSelectFile = async (): Promise<void> => {
 
   // Getting the handler
 
-  const handler = getDocumentHandler.value ?? null;
+  const handler = selectDocumentHandler.value ?? null;
 
   if (!handler) {
     console.warn(`Unable to open file: The 'getDocument' handler is not set`);
@@ -41,9 +41,9 @@ const onOpenFile = async (): Promise<void> => {
 
   const handle = ensureAsync(handler);
 
-  const document = await handle();
+  const _document = await handle();
 
-  if (!document) {
+  if (!_document) {
     console.log('Unable to open file: The handler returned nothing');
     return;
   }
@@ -51,8 +51,38 @@ const onOpenFile = async (): Promise<void> => {
 
   // Updating the data
 
-  appStore.addDocument(document);
-  appStore.setDocument(document);
+  appStore.addDocument(_document);
+
+  appStore.setDocument(_document);
+};
+
+const onSubmitTitle = (val: string): void => {
+
+  // Doing some checks
+
+  if (!val) {
+    console.log('Unable to submit title: The title is invalid: ' + audit(val));
+    return;
+  }
+
+  if (!isset(document.value)) {
+    appStore.addDocument({ id: '0', name: val });
+
+    appStore.setDocument({ id: '0', name: val, data: '' });
+
+    isEditingTitle.value = false;
+
+    return;
+  }
+
+
+  // Updating the data
+
+  appStore.updDocumentById('0', { ...document.value, name: val });
+
+  appStore.setDocument({ ...document.value, name: val });
+
+  isEditingTitle.value = false;
 };
 
 
@@ -61,9 +91,7 @@ const onOpenFile = async (): Promise<void> => {
 watch(isEditingTitle, async (val: boolean): Promise<void> => {
   if (!val) return;
 
-  await nextTick();
-
-  titleInput.value?.$el?.focus();
+  setTimeout(() => titleInput.value?.$el?.focus(), 50);
 });
 
 </script>
@@ -82,18 +110,18 @@ watch(isEditingTitle, async (val: boolean): Promise<void> => {
 
         <div class="jetedit_layout_sidebar_inner py-[var(--jetedit-editor-padding)]  flex flex-col">
           <Button
-              v-for="(document, i) of documents"
+              v-for="(_document, i) of documents"
               :key="i"
               class="w-full h-10 justify-start"
               variant="ghost"
           >
-            {{ document?.name ?? 'Unknown Document' }}
+            {{ _document?.name ?? 'Unknown Document' }}
           </Button>
 
           <Button
               class="w-full h-10 justify-start text-[#4E5F7C9F]"
               variant="ghost"
-              @click="onOpenFile"
+              @click="onSelectFile"
           >
             <Plus />
             Open File
@@ -131,9 +159,9 @@ watch(isEditingTitle, async (val: boolean): Promise<void> => {
           <Input
               v-if="isEditingTitle"
               class="font-medium"
-              model-value="Untitled.flext"
-              @blur="isEditingTitle = false"
-              @keydown.enter="isEditingTitle = false"
+              :model-value="document?.name || 'Unknown Document'"
+              @blur="e => onSubmitTitle(String(e?.target?.value || ''))"
+              @keydown.enter="e => onSubmitTitle(String(e?.target?.value || ''))"
               ref="titleInput"
           />
 

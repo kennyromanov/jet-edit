@@ -1,7 +1,7 @@
 import { createEditor } from '@core';
 import './app.css';
 
-export function pickFile(): Promise<File | null> {
+export function selectFile(): Promise<File | null> {
     return new Promise(resolve => {
 
         // Getting the picker
@@ -46,11 +46,11 @@ export function pickFile(): Promise<File | null> {
     });
 }
 
-export async function getDocument(): Promise<any> {
+export async function selectDocument(): Promise<any> {
 
     // Getting the file
 
-    const file = await pickFile();
+    const file = await selectFile();
 
     if (!file) return null;
 
@@ -63,4 +63,4 @@ export async function getDocument(): Promise<any> {
     return { data };
 }
 
-createEditor('#app', { getDocument });
+createEditor('#app', { selectDocument });

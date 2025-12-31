@@ -2,7 +2,7 @@ import { createApp } from 'vue';
 import { createI18n } from 'vue-i18n';
 import { createRouter } from 'vue-router';
 import { createPinia } from 'pinia';
-import { Obj, Locale, Document, GetDocumentHandler, GetDocumentByIdHandler } from '@/types';
+import { Obj, Locale, Document, SelectDocumentHandler, GetDocumentHandler, UpdateDocumentHandler, SaveDocumentHandler } from '@/types';
 import { DEFAULT_LANG, MESSAGES } from '@/i18n';
 import { history, routes } from '@/router';
 import * as types from '@/types';
@@ -23,8 +23,10 @@ export function createEditor(el: string | HTMLElement, options: Obj = {}): Obj {
     // Getting the options
 
     const lang: Locale = options?.lang ?? DEFAULT_LANG;
+    const selectDocumentHandler: SelectDocumentHandler | null = options?.selectDocument ?? null;
     const getDocumentHandler: GetDocumentHandler | null = options?.getDocument ?? null;
-    const getDocumentByIdHandler: GetDocumentByIdHandler | null = options?.getDocumentById ?? null;
+    const updDocumentHandler: UpdateDocumentHandler | null = options?.updDocument ?? null;
+    const saveDocumentHandler: SaveDocumentHandler | null = options?.saveDocument ?? null;
 
 
     // Getting the app
@@ -51,11 +53,17 @@ export function createEditor(el: string | HTMLElement, options: Obj = {}): Obj {
 
     appStore.setLang(lang);
 
+    if (selectDocumentHandler)
+        appStore.setOnSelectDocument(selectDocumentHandler);
+
     if (getDocumentHandler)
         appStore.setOnGetDocument(getDocumentHandler);
 
-    if (getDocumentByIdHandler)
-        appStore.setOnGetDocumentById(getDocumentByIdHandler);
+    if (updDocumentHandler)
+        appStore.setOnUpdDocument(updDocumentHandler);
+
+    if (saveDocumentHandler)
+        appStore.setOnSaveDocument(saveDocumentHandler);
 
 
     // Defining the functions
@@ -80,6 +88,6 @@ export function createEditor(el: string | HTMLElement, options: Obj = {}): Obj {
 
 export default createEditor;
 
-export type { Document, GetDocumentHandler, GetDocumentByIdHandler };
+export type { Document, SelectDocumentHandler, GetDocumentHandler, UpdateDocumentHandler, SaveDocumentHandler };
 
 export { types };

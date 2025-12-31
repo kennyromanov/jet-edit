@@ -38,18 +38,18 @@ const toolbarLabelEl = ref<any>(document.querySelector(TOOLBAR_LABEL_SELECTOR));
 // Defining the functions
 
 const getHeading = (tiptap: any): Heading => {
-  const test = (level: number): boolean => !!tiptap?.isActive('heading', { level });
+  const heading = (level: number): boolean => !!tiptap?.isActive('heading', { level });
 
-  if (test(1))
+  if (heading(1))
     return 'title';
 
-  else if (test(2))
+  else if (heading(2))
     return 'title';
 
-  else if (test(3))
+  else if (heading(3))
     return 'heading';
 
-  else if (test(4))
+  else if (heading(4))
     return 'subheading';
 
   else
@@ -57,21 +57,21 @@ const getHeading = (tiptap: any): Heading => {
 };
 
 const setHeading = (val: Heading, tiptap: any): void => {
-  const set = (level: number): void => tiptap?.chain()?.focus()?.setHeading({ level })?.run();
+  const heading = (level: number): void => tiptap?.chain()?.focus()?.setHeading({ level })?.run();
 
   const rem = (): void => tiptap?.chain()?.focus()?.setParagraph()?.run();
 
   switch (val) {
     case 'title':
-      set(2);
+      heading(2);
       break;
 
     case 'heading':
-      set(3);
+      heading(3);
       break;
 
     case 'subheading':
-      set(4);
+      heading(4);
       break;
 
     case 'body':
@@ -87,26 +87,25 @@ const val = computed({
   get(): string|null {
     return _document.value?.data ?? null;
   },
-  set(data: string|null): void {
+  set(_val: string|null): void {
 
     // Doing some checks
 
-    if (!isset(data)) {
+    if (!isset(_val)) {
       _document.value = null;
       return;
     }
 
     if (!isset(_document.value)) {
-      // @ts-ignore
-      appStore.addDocument({});
-      // @ts-ignore
-      appStore.setDocument({ data });
+      appStore.addDocument({ id: '0', name: 'Unknown Document' });
+
+      appStore.setDocument({ id: '0', name: 'Unknown Document', data: _val });
 
       return;
     }
 
 
-    _document.value = { ..._document.value, data };
+    appStore.setDocument({ ..._document.value, data: _val });
   },
 });
 
