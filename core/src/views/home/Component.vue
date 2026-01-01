@@ -3,7 +3,7 @@
 import { ref, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { Undo, Redo, Bold, Italic, Underline, Strikethrough } from 'lucide-vue-next';
-import { isset } from '@/lib';
+import { isset, nanoid } from '@/lib';
 import { Button } from '@/shadcn/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/components/ui/select';
 import store from '@/pinia/store';
@@ -30,7 +30,7 @@ const TOOLBAR_LABEL_SELECTOR = '[data-ui="toolbarAfterLabel"]';
 // Defining the variables
 
 const appStoreRefs = storeToRefs(appStore);
-const _document = appStoreRefs.document;
+const _document = appStoreRefs?.document ?? ref({});
 const toolbarEl = ref<any>(document.querySelector(TOOLBAR_SELECTOR));
 const toolbarLabelEl = ref<any>(document.querySelector(TOOLBAR_LABEL_SELECTOR));
 
@@ -83,6 +83,8 @@ const setHeading = (val: Heading, tiptap: any): void => {
 
 // Defining the computed
 
+const id = computed<string|null>(() => _document.value?.id ?? null);
+
 const val = computed({
   get(): string|null {
     return _document.value?.data ?? null;
@@ -91,19 +93,25 @@ const val = computed({
 
     // Doing some checks
 
-    if (!isset(_val)) {
-      _document.value = null;
-      return;
-    }
-
     if (!isset(_document.value)) {
-      appStore.addDocument({ id: '0', name: 'Unknown Document' });
+      const _id = nanoid();
 
-      appStore.setDocument({ id: '0', name: 'Unknown Document', data: _val });
+      appStore.addDocument({ id: _id, name: 'Unknown Document' });
+
+      appStore.setDocument({ id: _id, name: 'Unknown Document', data: _val });
 
       return;
     }
 
+    if (!isset(_val)) {
+      appStore.updDocumentById(id.value, { name: 'Unknown Document', data: null });
+      return;
+    }
+
+
+    // Updating the data
+
+    appStore.updDocumentById(id.value, { ..._document.value, data: _val });
 
     appStore.setDocument({ ..._document.value, data: _val });
   },

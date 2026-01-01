@@ -1,9 +1,9 @@
 <script setup lang="ts">
 
-import { ref, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { Sidebar, PanelRight, Plus } from 'lucide-vue-next';
-import { audit, isset, ensureAsync } from '@/lib';
+import { audit, isset, nanoid, ensureAsync } from '@/lib';
 import { Input } from '@/shadcn/components/ui/input';
 import { Button } from '@/shadcn/components/ui/button';
 import store from '@/pinia/store';
@@ -60,30 +60,37 @@ const onSubmitTitle = (val: string): void => {
 
   // Doing some checks
 
-  if (!val) {
-    console.log('Unable to submit title: The title is invalid: ' + audit(val));
-    return;
-  }
-
   if (!isset(document.value)) {
-    appStore.addDocument({ id: '0', name: val });
+    const _id = nanoid();
 
-    appStore.setDocument({ id: '0', name: val, data: '' });
+    appStore.addDocument({ id: _id, name: val });
+
+    appStore.setDocument({ id: _id, name: val, data: '' });
 
     isEditingTitle.value = false;
 
     return;
   }
 
+  if (!val) {
+    console.log('Unable to submit title: The title is invalid: ' + audit(val));
+    return;
+  }
+
 
   // Updating the data
 
-  appStore.updDocumentById('0', { ...document.value, name: val });
+  appStore.updDocumentById(id.value, { ...document.value, name: val });
 
   appStore.setDocument({ ...document.value, name: val });
 
   isEditingTitle.value = false;
 };
+
+
+// Defining the computed
+
+const id = computed<string|null>(() => document.value?.id ?? null);
 
 
 // Defining the watchers
@@ -114,6 +121,7 @@ watch(isEditingTitle, async (val: boolean): Promise<void> => {
               :key="i"
               class="w-full h-10 justify-start"
               variant="ghost"
+              @click="appStore.setDocument(_document)"
           >
             {{ _document?.name ?? 'Unknown Document' }}
           </Button>

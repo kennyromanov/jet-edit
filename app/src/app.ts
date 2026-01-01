@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { createEditor } from '@core';
 import './app.css';
 
@@ -60,7 +61,10 @@ export async function selectDocument(): Promise<any> {
     const data = await file.text();
 
 
-    return { data };
+    return {
+        id: nanoid(),
+        data: data,
+    };
 }
 
 createEditor('#app', { selectDocument });

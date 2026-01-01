@@ -39,11 +39,13 @@ export default defineStore('app', {
       this.documents = val;
     },
     addDocument(val: DocumentRecord): void {
-      if (!this.documents) this.documents = [];
-      this.documents.push(val);
+      if (this.documents)
+        this.documents.push(val);
+      else
+        this.documents = [ val ];
     },
     updDocumentById(id: string, val: UpdateDocumentPayload): void {
-      const index = this.documents?.findIndex(d => d?.id === id) ?? null;
+      const index = this.documents?.findIndex(d => isset(d?.id) && d?.id === id) ?? null;
 
       if (isset(index) && index >= 0)
         this.documents[index] = { id, ...val };
