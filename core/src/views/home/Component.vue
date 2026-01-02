@@ -120,7 +120,12 @@ const val = computed({
 </script>
 
 <template>
-  <Editor class="jetedit_home_view h-full" v-model="val">
+  <Editor
+      :key="id"
+      class="jetedit_home_view h-full"
+      hint="Once upon a midnight dreary…"
+      v-model="val"
+  >
     <template #controls="{ tiptap }">
       <Teleport :to="toolbarLabelEl">
         <div class="jetedit_control flex select-none" aria-label="History">

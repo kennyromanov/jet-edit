@@ -18,6 +18,7 @@ const emit = defineEmits<{
 
 const props = defineProps<{
   class?: HTMLAttributes['class'] | null,
+  hint?: string|null,
   modelValue?: string|null,
 }>();
 
@@ -39,6 +40,7 @@ const val = computed({
 <template>
   <Editor
       :class="cn('jetedit_editor flex flex-row gap-0 overflow-y-hidden', props.class)"
+      :hint="props.hint"
       v-slot="{ EditorComponent, tiptap }"
       v-model="val"
       @input="v => emit('input', v)"

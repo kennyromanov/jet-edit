@@ -63,6 +63,7 @@ export async function selectDocument(): Promise<any> {
 
     return {
         id: nanoid(),
+        name: file?.name || 'Unknown Document',
         data: data,
     };
 }
