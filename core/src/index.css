@@ -4,7 +4,7 @@
 @import "vue-sonner/style.css";
 
 
-/* Base styles */
+/* Base Styles */
 
 @custom-variant dark (&:is(.dark *));
 
@@ -46,8 +46,9 @@
 
     /* Custom */
 
-    --jetedit-editor-padding: 2em;
+    --jetedit-editor-padding: 2rem;
     --jetedit-editor-controls-size: 20%;
+    --jetedit-editor-controls-animation: 0.3s;
     --jetedit-editor-controls-spacing: calc(1.6 * var(--jetedit-editor-padding));
     --jetedit-editor-controls-half-spacing: calc(0.5 * var(--jetedit-editor-controls-spacing));
     --jetedit-editor-header-icon-padding: 0.75rem;
@@ -162,7 +163,7 @@
 }
 
 
-/* Editor styles */
+/* Editor Styles */
 
 .jetedit {
     user-select: none;
@@ -215,7 +216,7 @@
             border-radius: 0.4rem;
             color: var(--tiptap-black);
             font-size: 0.85rem;
-            padding: 0.25em 0.3em;
+            padding: 0.25em 0.3rem;
         }
 
         pre {

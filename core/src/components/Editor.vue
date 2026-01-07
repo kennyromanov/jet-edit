@@ -23,6 +23,11 @@ const props = defineProps<{
 }>();
 
 
+// Defining the functions
+
+const dbg = (val: any): void => console.log(val);
+
+
 // Defining the computed
 
 const val = computed({
@@ -45,6 +50,7 @@ const val = computed({
       v-model="val"
       @input="v => emit('input', v)"
       @change="v => emit('change', v)"
+      @compile="dbg"
       no-default
   >
     <slot :EditorComponent="EditorComponent" :tiptap="tiptap">

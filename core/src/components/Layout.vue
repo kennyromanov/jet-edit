@@ -109,52 +109,48 @@ watch(isEditingTitle, async (val: boolean): Promise<void> => {
       :data-sidebar="Number(isSidebarShown)"
       :data-toolbar="Number(isToolbarShown)"
   >
-    <div class="jetedit_layout_sidebar_wrapper w-[var(--jetedit-editor-controls-size)] absolute top-0 left-0 bottom-0 overflow-x-hidden overflow-y-scroll">
-      <div class="jetedit_layout_sidebar min-w-[var(--jetedit-editor-controls-size)]">
-        <div class="jetedit_layout_sidebar_header h-[var(--jetedit-editor-header-height)] pl-[var(--jetedit-editor-padding)] pr-[var(--jetedit-editor-controls-half-spacing)] flex items-center cursor-default shrink-0">
-          <b>JetEdit</b>
-        </div>
+    <div class="jetedit_layout_sidebar w-[var(--jetedit-editor-controls-size)] absolute top-0 left-0 bottom-0 overflow-x-hidden overflow-y-scroll">
+      <div class="jetedit_layout_sidebar_header h-[var(--jetedit-editor-header-height)] pl-[var(--jetedit-editor-padding)] pr-[var(--jetedit-editor-controls-half-spacing)] flex items-center cursor-default shrink-0">
+        <b>JetEdit</b>
+      </div>
 
-        <div class="jetedit_layout_sidebar_inner py-[var(--jetedit-editor-padding)]  flex flex-col">
-          <Button
-              v-for="(_document, i) of documents"
-              :key="i"
-              class="w-full h-10 justify-start"
-              variant="ghost"
-              @click="appStore.setDocument(_document)"
-          >
-            {{ _document?.name ?? 'Unknown Document' }}
-          </Button>
+      <div class="jetedit_layout_sidebar_inner py-[var(--jetedit-editor-padding)]  flex flex-col">
+        <Button
+            v-for="(_document, i) of documents"
+            :key="i"
+            class="w-full h-10 justify-start"
+            variant="ghost"
+            @click="appStore.setDocument(_document)"
+        >
+          {{ _document?.name ?? 'Unknown Document' }}
+        </Button>
 
-          <Button
-              class="w-full h-10 justify-start text-[#4E5F7C9F]"
-              variant="ghost"
-              @click="onSelectFile"
-          >
-            <Plus />
-            Open File
-          </Button>
-        </div>
+        <Button
+            class="w-full h-10 justify-start text-[#4E5F7C9F]"
+            variant="ghost"
+            @click="onSelectFile"
+        >
+          <Plus />
+          Open File
+        </Button>
       </div>
     </div>
 
-    <div class="jetedit_layout_toolbar_wrapper w-[var(--jetedit-editor-controls-size)] absolute top-0 right-0 bottom-0 items-end overflow-x-hidden overflow-y-scroll">
-      <div class="jetedit_layout_toolbar min-w-[var(--jetedit-editor-controls-size)]">
-        <div class="jetedit_layout_header h-[var(--jetedit-editor-header-height)] pl-[var(--jetedit-editor-controls-half-spacing)] pr-[var(--jetedit-editor-padding)] flex justify-between items-center shrink-0">
-          <b>Toolbar</b>
+    <div class="jetedit_layout_toolbar w-[var(--jetedit-editor-controls-size)] absolute top-0 right-0 bottom-0 items-end overflow-x-hidden overflow-y-scroll">
+      <div class="jetedit_layout_header h-[var(--jetedit-editor-header-height)] pl-[var(--jetedit-editor-controls-half-spacing)] pr-[var(--jetedit-editor-padding)] flex justify-between items-center shrink-0">
+        <b>Toolbar</b>
 
-          <slot name="toolbarAfterLabel">
-            <div data-ui="toolbarAfterLabel" />
-          </slot>
-        </div>
-
-        <slot name="toolbarInner">
-          <div
-              class="jetedit_layout_toolbar_inner py-[var(--jetedit-editor-padding)] pr-[var(--jetedit-editor-padding)] pl-[var(--jetedit-editor-controls-half-spacing)]"
-              data-ui="toolbarInner"
-          />
+        <slot name="toolbarAfterLabel">
+          <div data-ui="toolbarAfterLabel" />
         </slot>
       </div>
+
+      <slot name="toolbarInner">
+        <div
+            class="jetedit_layout_toolbar_inner py-[var(--jetedit-editor-padding)] pr-[var(--jetedit-editor-padding)] pl-[var(--jetedit-editor-controls-half-spacing)]"
+            data-ui="toolbarInner"
+        />
+      </slot>
     </div>
 
     <main class="jetedit_layout_inner h-full absolute top-0 bottom-0 left-[var(--jetedit-editor-controls-size)] right-[var(--jetedit-editor-controls-size)] flex flex-col">
@@ -198,8 +194,13 @@ watch(isEditingTitle, async (val: boolean): Promise<void> => {
 
 .jetedit_layout {
   &[data-sidebar="0"] {
-    .jetedit_layout_sidebar_wrapper {
-      width: 0;
+    .jetedit_layout_sidebar {
+      clip-path: polygon(
+        0% 0%,
+        0% 0%,
+        0% 100%,
+        0% 100%
+      );
     }
 
     .jetedit_layout_inner {
@@ -212,22 +213,30 @@ watch(isEditingTitle, async (val: boolean): Promise<void> => {
       right: 0;
     }
 
-    .jetedit_layout_toolbar_wrapper {
-      width: 0;
+    .jetedit_layout_toolbar {
+      right: calc(-1 * var(--jetedit-editor-controls-size));
     }
   }
 
 
-  .jetedit_layout_sidebar_wrapper,
-  .jetedit_layout_toolbar_wrapper {
-    transition: width 0.3s;
+  .jetedit_layout_sidebar,
+  .jetedit_layout_toolbar {
+    transition: right var(--jetedit-editor-controls-animation);
   }
 
   .jetedit_layout_inner {
-    transition: left 0.3s, right 0.3s;
+    transition: left var(--jetedit-editor-controls-animation), right var(--jetedit-editor-controls-animation);
   }
 
   .jetedit_layout_sidebar {
+    clip-path: polygon(
+      0% 0%,
+      100% 0%,
+      100% 100%,
+      0% 100%
+    );
+    transition: clip-path var(--jetedit-editor-controls-animation);
+
     .jetedit_layout_sidebar_inner {
       padding-right: calc(var(--jetedit-editor-controls-half-spacing) - 1rem);
       padding-left: calc(var(--jetedit-editor-padding) - 1rem);

@@ -2,7 +2,7 @@
 
 import { ref, computed } from 'vue';
 import { storeToRefs } from 'pinia';
-import { Undo, Redo, Bold, Italic, Underline, Strikethrough } from 'lucide-vue-next';
+import { Undo, Redo, Bold, Italic, Underline, Strikethrough, Zap } from 'lucide-vue-next';
 import { isset, nanoid } from '@/lib';
 import { Button } from '@/shadcn/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/components/ui/select';
@@ -203,7 +203,7 @@ const val = computed({
                 <SelectValue />
               </SelectTrigger>
 
-              <SelectContent>
+              <SelectContent @closeAutoFocus.prevent>
                 <SelectItem value="title">
                   Title
                 </SelectItem>
@@ -223,7 +223,7 @@ const val = computed({
             </Select>
           </div>
 
-          <div class="jetedit_control flex gap-1" aria-label="Blocks">
+          <div class="jetedit_control flex flex-wrap gap-1" aria-label="Blocks">
             <Button
                 size="sm"
                 :variant="tiptap.isActive('bulletList') ? 'default' : 'secondary'"
@@ -254,6 +254,17 @@ const val = computed({
                 @click="tiptap.chain().focus().toggleBlockquote().run()"
             >
               Quote
+            </Button>
+          </div>
+
+          <div class="jetedit_control flex flex-wrap gap-1" aria-label="Blocks">
+            <Button
+                size="sm"
+                :variant="tiptap.isActive('bulletList') ? 'default' : 'secondary'"
+                @click="tiptap.chain().focus().toggleBulletList().run()"
+            >
+              <Zap />
+              Smart
             </Button>
           </div>
         </div>
