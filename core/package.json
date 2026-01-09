@@ -61,7 +61,7 @@
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.18",
     "vue": "^3.5.26",
-    "vue-edit": "link:vue-edit",
+    "vue-edit": "^1.2.5",
     "vue-i18n": "^11.2.8",
     "vue-router": "^4.6.4",
     "vue-sonner": "^2.0.9"
