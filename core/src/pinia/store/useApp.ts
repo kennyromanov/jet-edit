@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Obj, Locale, DocumentRecord, Document, UpdateDocumentPayload, SelectDocumentHandler, GetDocumentHandler, UpdateDocumentHandler, SaveDocumentHandler } from '@/types';
+import { Obj, Locale, DocumentRecord, Document, SetDocumentById, SelectDocumentHandler, GetDocumentHandler, UpdateDocumentHandler, SaveDocumentHandler } from '@/types';
 import { isset } from '@/lib';
 import { BaseError } from '@/errors';
 
@@ -35,8 +35,21 @@ export default defineStore('app', {
     getDocuments(): DocumentRecord[] | null {
       return this.documents;
     },
+    getDocumentById(id: string): DocumentRecord {
+      return this.documents?.find(d => isset(d?.id) && d?.id === id) ?? null;
+    },
     setDocuments(val: DocumentRecord[]): void {
       this.documents = val;
+    },
+    setDocumentById(id: string, val: SetDocumentById): void {
+      const data = val?.data || '';
+      const index = this.documents?.findIndex(d => isset(d?.id) && d?.id === id) ?? null;
+      const get = (): string => data;
+
+      if (isset(index) && index >= 0)
+        this.documents[index] = { ...val, id, get };
+      else
+        throw new BaseError(`Unable to update document: documentID '${id}' does not exist`);
     },
     addDocument(val: DocumentRecord): void {
       if (this.documents)
@@ -44,18 +57,10 @@ export default defineStore('app', {
       else
         this.documents = [ val ];
     },
-    updDocumentById(id: string, val: UpdateDocumentPayload): void {
-      const index = this.documents?.findIndex(d => isset(d?.id) && d?.id === id) ?? null;
-
-      if (isset(index) && index >= 0)
-        this.documents[index] = { id, ...val };
-      else
-        throw new BaseError(`Unable to update document: documentID '${id}' does not exist`);
-    },
-    getDocument(): Document | null {
+    getEditorDocument(): Document | null {
       return this.document;
     },
-    setDocument(val: Document): void {
+    setEditorDocument(val: Document): void {
       this.document = val;
     },
     getOnSelectDocument(): SelectDocumentHandler | null {

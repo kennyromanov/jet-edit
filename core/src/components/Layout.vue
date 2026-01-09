@@ -3,6 +3,7 @@
 import { ref, computed, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { Sidebar, PanelRight, Plus } from 'lucide-vue-next';
+import { DocumentRecord } from '@/types';
 import { audit, isset, nanoid, ensureAsync } from '@/lib';
 import { Input } from '@/shadcn/components/ui/input';
 import { Button } from '@/shadcn/components/ui/button';
@@ -25,6 +26,28 @@ const isEditingTitle = ref<boolean>(false);
 
 // Defining the functions
 
+const onSelectDocument = async (val: DocumentRecord): Promise<void> => {
+
+  // Getting the handler
+
+  const handler = val?.get ?? null;
+
+  if (!handler) {
+    console.warn('Unable to get document: The record is missing loader: ' + audit(val));
+    return;
+  }
+
+
+  // Getting the data
+
+  const handle = ensureAsync<string>(handler);
+
+  const data = await handle();
+
+
+  appStore.setEditorDocument({ ...val, data });
+};
+
 const onSelectFile = async (): Promise<void> => {
 
   // Getting the handler
@@ -32,7 +55,7 @@ const onSelectFile = async (): Promise<void> => {
   const handler = selectDocumentHandler.value ?? null;
 
   if (!handler) {
-    console.warn(`Unable to open file: The 'getDocument' handler is not set`);
+    console.warn(`Unable to open file: The 'getEditorDocument' handler is not set`);
     return;
   }
 
@@ -49,11 +72,18 @@ const onSelectFile = async (): Promise<void> => {
   }
 
 
+  // Getting the loader
+
+  const data = _document?.data || '';
+
+  const get = (): string => data;
+
+
   // Updating the data
 
-  appStore.addDocument(_document);
+  appStore.addDocument({ ..._document, get });
 
-  appStore.setDocument(_document);
+  appStore.setEditorDocument(_document);
 };
 
 const onSubmitTitle = (val: string): void => {
@@ -61,13 +91,22 @@ const onSubmitTitle = (val: string): void => {
   // Doing some checks
 
   if (!isset(document.value)) {
+
+    // Adding the document
+
     const _id = nanoid();
 
-    appStore.addDocument({ id: _id, name: val });
+    const get = (): string => '';
 
-    appStore.setDocument({ id: _id, name: val, data: '' });
+    appStore.addDocument({ id: _id, name: val, get: get });
+
+
+    // Updating the data
+
+    appStore.setEditorDocument({ id: _id, name: val, data: '' });
 
     isEditingTitle.value = false;
+
 
     return;
   }
@@ -80,9 +119,9 @@ const onSubmitTitle = (val: string): void => {
 
   // Updating the data
 
-  appStore.updDocumentById(id.value, { ...document.value, name: val });
+  appStore.setDocumentById(id.value, { ...document.value, name: val });
 
-  appStore.setDocument({ ...document.value, name: val });
+  appStore.setEditorDocument({ ...document.value, name: val });
 
   isEditingTitle.value = false;
 };
@@ -120,7 +159,7 @@ watch(isEditingTitle, async (val: boolean): Promise<void> => {
             :key="i"
             class="w-full h-10 justify-start"
             variant="ghost"
-            @click="appStore.setDocument(_document)"
+            @click="onSelectDocument(_document)"
         >
           {{ _document?.name ?? 'Unknown Document' }}
         </Button>

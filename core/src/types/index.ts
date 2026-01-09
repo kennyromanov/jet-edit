@@ -42,18 +42,22 @@ export type DocumentData = Obj;
 
 export type SimpleDocument = {
     name: string,
+    extra?: {
+        position?: number|null,
+    },
 };
 
 export type DocumentRecord = SimpleDocument & {
     id: string,
+    get: Loader<string>,
 };
 
-export type Document = DocumentRecord & {
+export type Document = SimpleDocument & {
     id: string,
     data: string,
 };
 
-export type UpdateDocumentPayload = SimpleDocument & {
+export type SetDocumentById = SimpleDocument & {
     data: string,
 };
 
@@ -66,6 +70,6 @@ export type SelectDocumentHandler = () => MaybePromise<Document | null>;
 
 export type GetDocumentHandler = (id: string) => MaybePromise<Document | null>;
 
-export type UpdateDocumentHandler = (id: string, val: UpdateDocumentPayload) => MaybePromise<void>;
+export type UpdateDocumentHandler = (id: string, val: SetDocumentById) => MaybePromise<void>;
 
-export type SaveDocumentHandler = (id: string, val: UpdateDocumentPayload) => MaybePromise<void>;
+export type SaveDocumentHandler = (id: string, val: SetDocumentById) => MaybePromise<void>;

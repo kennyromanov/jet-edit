@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { computed, HTMLAttributes } from 'vue';
+import { ref, computed, HTMLAttributes } from 'vue';
 import { cn } from '@/shadcn/lib/utils';
 import Editor from 'vue-edit';
 
@@ -10,6 +10,9 @@ import Editor from 'vue-edit';
 const emit = defineEmits<{
   (e: 'input', val: string|null): void,
   (e: 'change', val: string|null): void,
+  (e: 'update:from', val: number|null): void,
+  (e: 'update:to', val: number|null): void,
+  (e: 'update:position', val: number|null): void,
   (e: 'update:modelValue', val: string|null): void,
 }>();
 
@@ -18,9 +21,19 @@ const emit = defineEmits<{
 
 const props = defineProps<{
   class?: HTMLAttributes['class'] | null,
+
   hint?: string|null,
+  from?: number|string|null,
+  to?: number|string|null,
+  position?: number|string|null,
+
   modelValue?: string|null,
 }>();
+
+
+// Defining the variables
+
+const editorEl = ref<any>(null);
 
 
 // Defining the functions
@@ -39,19 +52,56 @@ const val = computed({
   },
 });
 
-</script>
+const from = computed({
+  get(): number|string|null {
+    return props.from ?? null;
+  },
+  set(_val: number|string|null): void {
+    emit('update:from', Number(_val));
+  },
+});
 
+const to = computed({
+  get(): number|string|null {
+    return props.to ?? null;
+  },
+  set(_val: number|string|null): void {
+    emit('update:to', Number(_val));
+  },
+});
+
+const position = computed({
+  get(): number|string|null {
+    return props.position ?? null;
+  },
+  set(_val: number|string|null): void {
+    emit('update:position', Number(_val));
+  },
+});
+
+
+// Defining the expose
+
+defineExpose({
+  focus: (): void => editorEl.value?.focus(),
+});
+
+</script>
 
 <template>
   <Editor
       :class="cn('jetedit_editor flex flex-row gap-0 overflow-y-hidden', props.class)"
       :hint="props.hint"
       v-slot="{ EditorComponent, tiptap }"
+      v-model:from="from"
+      v-model:to="to"
+      v-model:position="position"
       v-model="val"
       @input="v => emit('input', v)"
       @change="v => emit('change', v)"
       @compile="dbg"
       no-default
+      ref="editorEl"
   >
     <slot :EditorComponent="EditorComponent" :tiptap="tiptap">
       <div class="jetedit_editor_inner w-full h-full py-[var(--jetedit-editor-padding)] px-[var(--jetedit-editor-controls-half-spacing)] cursor-text overflow-y-scroll">
