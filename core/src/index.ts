@@ -1,17 +1,14 @@
 import { createApp } from 'vue';
-import { Obj } from '@/types';
-import { useI18nCache, useI18nReactivity } from '@/i18n/lib';
+import { createI18n } from 'vue-i18n';
+import { createRouter } from 'vue-router';
+import { createPinia } from 'pinia';
+import { Obj, Locale, Document, SelectDocumentHandler, GetDocumentHandler, UpdateDocumentHandler, SaveDocumentHandler } from '@/types';
+import { DEFAULT_LANG, MESSAGES } from '@/i18n';
+import { history, routes } from '@/router';
+import * as types from '@/types';
 import store from '@/pinia/store';
-import i18n from '@/i18n';
-import router from '@/router';
-import Editor from '@/components/Editor.vue';
 import App from './App.vue';
 import './index.css';
-
-
-// Third-parties
-
-export const appStore = store.useApp();
 
 
 // Constants
@@ -21,37 +18,68 @@ export const MOBILE_WIDTH = 1024;
 
 // Functions
 
-export function updIsMobile(): void {
-    appStore.setIsMobile(window.innerWidth < MOBILE_WIDTH);
-}
+export function createEditor(el: string | HTMLElement, options: Obj = {}): Obj {
 
-export function createEditor(el: string | HTMLElement): Obj {
+    // Getting the options
 
-    // Getting the cache
-
-    useI18nCache();
-
-    useI18nReactivity();
+    const lang: Locale = options?.lang ?? DEFAULT_LANG;
+    const selectDocumentHandler: SelectDocumentHandler | null = options?.selectDocument ?? null;
+    const getDocumentHandler: GetDocumentHandler | null = options?.getDocument ?? null;
+    const updDocumentHandler: UpdateDocumentHandler | null = options?.updDocument ?? null;
+    const saveDocumentHandler: SaveDocumentHandler | null = options?.saveDocument ?? null;
 
 
-    // Setting the listeners
+    // Getting the app
 
-    window.addEventListener('resize', updIsMobile);
+    const pinia = createPinia();
+
+    const i18n = createI18n({
+        locale: DEFAULT_LANG,
+        fallbackLocale: DEFAULT_LANG,
+        messages: MESSAGES,
+    });
+
+    const router = createRouter({ history, routes });
+
+    const app = createApp(App).use(pinia).use(i18n).use(router);
+
+
+    // Getting the store
+
+    const appStore = store.useApp();
+
+
+    // Updating the data
+
+    appStore.setLang(lang);
+
+    if (selectDocumentHandler)
+        appStore.setOnSelectDocument(selectDocumentHandler);
+
+    if (getDocumentHandler)
+        appStore.setOnGetDocument(getDocumentHandler);
+
+    if (updDocumentHandler)
+        appStore.setOnUpdDocument(updDocumentHandler);
+
+    if (saveDocumentHandler)
+        appStore.setOnSaveDocument(saveDocumentHandler);
 
 
     // Defining the functions
 
+    const updIsMobile = (): void => appStore.setIsMobile(window.innerWidth < MOBILE_WIDTH);
+
     const clear = () => window.removeEventListener('resize', updIsMobile);
 
 
-    // Initializing the app
+    // Mounting the app
+
+    window.addEventListener('resize', updIsMobile);
 
     updIsMobile();
 
-    createApp(App)
-        .use(i18n)
-        .use(router)
-        .mount(el);
+    app.mount(el);
 
 
     return { clear };
@@ -60,4 +88,6 @@ export function createEditor(el: string | HTMLElement): Obj {
 
 export default createEditor;
 
-export { Editor };
+export type { Document, SelectDocumentHandler, GetDocumentHandler, UpdateDocumentHandler, SaveDocumentHandler };
+
+export { types };
