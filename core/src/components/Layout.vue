@@ -180,14 +180,14 @@ watch(isEditingTitle, async (val: boolean): Promise<void> => {
         <b>Toolbar</b>
 
         <slot name="toolbarAfterLabel">
-          <div data-ui="toolbarAfterLabel" />
+          <div data-jetedit="toolbarAfterLabel" />
         </slot>
       </div>
 
       <slot name="toolbarInner">
         <div
             class="jetedit_layout_toolbar_inner py-[var(--jetedit-editor-padding)] pr-[var(--jetedit-editor-padding)] pl-[var(--jetedit-editor-controls-half-spacing)]"
-            data-ui="toolbarInner"
+            data-jetedit="toolbarInner"
         />
       </slot>
     </div>

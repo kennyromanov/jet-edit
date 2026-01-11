@@ -2,6 +2,7 @@
 
 import { ref, computed, HTMLAttributes } from 'vue';
 import { cn } from '@/shadcn/lib/utils';
+import { Obj } from '@/types';
 import Editor from 'vue-edit';
 
 
@@ -27,6 +28,7 @@ const props = defineProps<{
   to?: number|string|null,
   position?: number|string|null,
 
+  extensions?: Obj[] | null,
   modelValue?: string|null,
 }>();
 
@@ -92,6 +94,7 @@ defineExpose({
   <Editor
       :class="cn('jetedit_editor flex flex-row gap-0 overflow-y-hidden', props.class)"
       :hint="props.hint"
+      :extensions="extensions"
       v-slot="{ EditorComponent, tiptap }"
       v-model:from="from"
       v-model:to="to"
@@ -104,7 +107,7 @@ defineExpose({
       ref="editorEl"
   >
     <slot :EditorComponent="EditorComponent" :tiptap="tiptap">
-      <div class="jetedit_editor_inner w-full h-full py-[var(--jetedit-editor-padding)] px-[var(--jetedit-editor-controls-half-spacing)] cursor-text overflow-y-scroll">
+      <div class="jetedit_editor_inner w-full h-full cursor-text overflow-y-scroll">
         <component :is="EditorComponent" />
       </div>
 
@@ -112,3 +115,13 @@ defineExpose({
     </slot>
   </Editor>
 </template>
+
+<style scoped>
+
+.jetedit_editor {
+  :deep(.tiptap) {
+    padding: var(--jetedit-editor-padding) var(--jetedit-editor-controls-half-spacing);
+  }
+}
+
+</style>

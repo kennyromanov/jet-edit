@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import store from '@/pinia/store';
 import Editor from '@/components/Editor.vue';
 import ToolbarAccess from '@/components/ToolbarAccess.vue';
+import FlextTest from '@/flext/modules/test';
 
 
 // Third-parties
@@ -61,9 +62,9 @@ const setLineHeading = (val: Heading, tiptap: any): void => {
 
   // Defining the functions
 
-  const handle = (level: number): void => tiptap?.setLineHeading({ level });
+  const handle = (level: number): void => tiptap?.commands?.setHeading({ level });
 
-  const rem = (): void => tiptap?.setParagraph();
+  const rem = (): void => tiptap?.commands?.setParagraph();
 
 
   // Setting the heading
@@ -183,6 +184,7 @@ watch(id, async () => {
       :key="id"
       class="jetedit_home_view h-full"
       hint="Once upon a midnight dreary…"
+      :extensions="[ FlextTest ]"
       v-model:position="position"
       v-model="val"
       ref="editorEl"
@@ -194,8 +196,8 @@ watch(id, async () => {
             <Button
                 size="sm"
                 variant="ghost"
-                :disabled="!tiptap.can().chain().focus().undo().run()"
-                @click="tiptap.chain().focus().undo().run()"
+                :disabled="!tiptap.can().undo()"
+                @click="tiptap.commands.undo()"
             >
               <Undo />
             </Button>
@@ -203,8 +205,8 @@ watch(id, async () => {
             <Button
                 size="sm"
                 variant="ghost"
-                :disabled="!tiptap.can().chain().focus().redo().run()"
-                @click="tiptap.chain().focus().redo().run()"
+                :disabled="!tiptap.can().redo()"
+                @click="tiptap.commands.redo()"
             >
               <Redo />
             </Button>
@@ -217,9 +219,9 @@ watch(id, async () => {
                 class="jetedit_control w-9"
                 size="sm"
                 variant="ghost"
-                :disabled="!tiptap.can().chain().focus().toggleBold().run()"
+                :disabled="!tiptap.can().toggleBold()"
                 :data-active="Number(tiptap.isActive('bold'))"
-                @click="tiptap.chain().focus().toggleBold().run()"
+                @click="tiptap.commands.toggleBold()"
             >
               <Bold />
             </Button>
@@ -228,9 +230,9 @@ watch(id, async () => {
                 class="jetedit_control w-9"
                 size="sm"
                 variant="ghost"
-                :disabled="!tiptap.can().chain().focus().toggleItalic().run()"
+                :disabled="!tiptap.can().toggleItalic()"
                 :data-active="Number(tiptap.isActive('italic'))"
-                @click="tiptap.chain().focus().toggleItalic().run()"
+                @click="tiptap.commands.toggleItalic()"
             >
               <Italic />
             </Button>
@@ -239,9 +241,9 @@ watch(id, async () => {
                 class="jetedit_control w-9"
                 size="sm"
                 variant="ghost"
-                :disabled="!tiptap.can().chain().focus().toggleBlockquote().run()"
+                :disabled="!tiptap.can().toggleBlockquote()"
                 :data-active="Number(tiptap.isActive('underline'))"
-                @click="tiptap.chain().focus().toggleUnderline().run()"
+                @click="tiptap.commands.toggleUnderline()"
             >
               <Underline />
             </Button>
@@ -250,9 +252,9 @@ watch(id, async () => {
                 class="jetedit_control w-9"
                 size="sm"
                 variant="ghost"
-                :disabled="!tiptap.can().chain().focus().toggleStrike().run()"
+                :disabled="!tiptap.can().toggleStrike()"
                 :data-active="Number(tiptap.isActive('strike'))"
-                @click="tiptap.chain().focus().toggleStrike().run()"
+                @click="tiptap.commands.toggleStrike()"
             >
               <Strikethrough />
             </Button>
@@ -291,7 +293,7 @@ watch(id, async () => {
             <Button
                 size="sm"
                 :variant="tiptap.isActive('bulletList') ? 'default' : 'secondary'"
-                @click="tiptap.chain().focus().toggleBulletList().run()"
+                @click="tiptap.commands.toggleBulletList()"
             >
               Bullet
             </Button>
@@ -299,7 +301,7 @@ watch(id, async () => {
             <Button
                 size="sm"
                 :variant="tiptap.isActive('orderedList') ? 'default' : 'secondary'"
-                @click="tiptap.chain().focus().toggleLink().run()"
+                @click="tiptap.commands.toggleLink()"
             >
               List
             </Button>
@@ -307,7 +309,7 @@ watch(id, async () => {
             <Button
                 size="sm"
                 :variant="tiptap.isActive('codeBlock') ? 'default' : 'secondary'"
-                @click="tiptap.chain().focus().toggleCodeBlock().run()"
+                @click="tiptap.commands.toggleCodeBlock()"
             >
               Code
             </Button>
@@ -315,7 +317,7 @@ watch(id, async () => {
             <Button
                 size="sm"
                 :variant="tiptap.isActive('blockquote') ? 'default' : 'secondary'"
-                @click="tiptap.chain().focus().toggleBlockquote().run()"
+                @click="tiptap.commands.toggleBlockquote()"
             >
               Quote
             </Button>
@@ -325,7 +327,7 @@ watch(id, async () => {
             <Button
                 size="sm"
                 :variant="tiptap.isActive('bulletList') ? 'default' : 'secondary'"
-                @click="tiptap.chain().focus().toggleBulletList().run()"
+                @click="tiptap.commands.toggleBulletList()"
             >
               <Zap />
               Smart
