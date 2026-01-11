@@ -76,7 +76,7 @@ Requirements:
 
 * Keep the core flow predictable and centralized
 * Don’t scatter stateful side effects across random components
-* Prefer the existing structure: `Layout` → `Home view` → `Editor wrapper`
+* Prefer the existing structure: `Layout` --> `Home view` --> `Editor wrapper`
 
 ---
 
@@ -86,7 +86,7 @@ Responsible for:
 
 * Rendering the editor component
 * Providing access to the Tiptap instance where needed
-* Bridging Vue UI ↔ Tiptap/Vue Edit APIs
+* Bridging Vue UI <--> Tiptap/Vue Edit APIs
 
 Requirements:
 
@@ -246,8 +246,8 @@ JetEdit code should be **straightforward, explicit, and predictable**.
 
 ### 6.2. Naming rules
 
-* **Data → nouns:** `documents`, `document`, `model`, `options`, `paths`, `state`, `val`
-* **Actions → verbs:** `createEditor`, `selectDocument`, `loadDocument`, `saveDocument`, `applyTemplate`, `exportDocument`
+* **Data --> nouns:** `documents`, `document`, `model`, `options`, `paths`, `state`, `val`
+* **Actions --> verbs:** `createEditor`, `selectDocument`, `loadDocument`, `saveDocument`, `applyTemplate`, `exportDocument`
 * No unclear abbreviations
 * No humorous names — this is a long-lived product library
 

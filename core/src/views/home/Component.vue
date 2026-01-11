@@ -29,6 +29,7 @@ type Heading = 'title' | 'heading' | 'subheading' | 'body';
 const appStoreRefs = storeToRefs(appStore);
 const _document = appStoreRefs?.document ?? ref({});
 const editorEl = ref<any>(null);
+const extensions = ref<any[]>([ FlextTest ]);
 
 
 // Defining the functions
@@ -184,7 +185,7 @@ watch(id, async () => {
       :key="id"
       class="jetedit_home_view h-full"
       hint="Once upon a midnight dreary…"
-      :extensions="[ FlextTest ]"
+      :extensions="extensions"
       v-model:position="position"
       v-model="val"
       ref="editorEl"
