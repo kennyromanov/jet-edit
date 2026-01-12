@@ -153,7 +153,7 @@ watch(isEditingTitle, async (val: boolean): Promise<void> => {
         <b>JetEdit</b>
       </div>
 
-      <div class="jetedit_layout_sidebar_inner py-[var(--jetedit-editor-padding)]  flex flex-col">
+      <div class="jetedit_layout_sidebar_inner flex flex-col">
         <Button
             v-for="(_document, i) of documents"
             :key="i"
@@ -161,7 +161,9 @@ watch(isEditingTitle, async (val: boolean): Promise<void> => {
             variant="ghost"
             @click="onSelectDocument(_document)"
         >
-          {{ _document?.name ?? 'Unknown Document' }}
+          <span class="truncate">
+            {{ _document?.name ?? 'Unknown Document' }}
+          </span>
         </Button>
 
         <Button
@@ -175,13 +177,22 @@ watch(isEditingTitle, async (val: boolean): Promise<void> => {
       </div>
     </div>
 
-    <div class="jetedit_layout_toolbar w-[var(--jetedit-editor-controls-size)] absolute top-0 right-0 bottom-0 items-end overflow-x-hidden overflow-y-scroll">
-      <div class="jetedit_layout_header h-[var(--jetedit-editor-header-height)] pl-[var(--jetedit-editor-controls-half-spacing)] pr-[var(--jetedit-editor-padding)] flex justify-between items-center shrink-0">
-        <b>Toolbar</b>
+    <div
+        class="jetedit_layout_toolbar w-[var(--jetedit-editor-controls-size)] absolute top-0 right-0 bottom-0 items-end overflow-x-hidden overflow-y-scroll"
+        data-jetedit="toolbar"
+        ref="toolbar"
+    >
+      <div
+          class="jetedit_layout_toolbar_header h-[var(--jetedit-editor-header-height)] pl-[var(--jetedit-editor-controls-half-spacing)] pr-[var(--jetedit-editor-padding)] shrink-0"
+          data-jetedit="toolbarHeader"
+      >
+        <div class="jetedit_layout_toolbar_header_inner h-full flex justify-between items-center" data-jetedit="toolbarHeaderInner">
+          <b data-jetedit="toolbarLabel">Toolbar</b>
 
-        <slot name="toolbarAfterLabel">
-          <div data-jetedit="toolbarAfterLabel" />
-        </slot>
+          <slot name="toolbarAfterLabel">
+            <div data-jetedit="toolbarAfterLabel" />
+          </slot>
+        </div>
       </div>
 
       <slot name="toolbarInner">
@@ -258,13 +269,13 @@ watch(isEditingTitle, async (val: boolean): Promise<void> => {
   }
 
 
+  .jetedit_layout_inner {
+    transition: left var(--jetedit-editor-controls-animation), right var(--jetedit-editor-controls-animation);
+  }
+
   .jetedit_layout_sidebar,
   .jetedit_layout_toolbar {
     transition: right var(--jetedit-editor-controls-animation);
-  }
-
-  .jetedit_layout_inner {
-    transition: left var(--jetedit-editor-controls-animation), right var(--jetedit-editor-controls-animation);
   }
 
   .jetedit_layout_sidebar {
@@ -274,11 +285,14 @@ watch(isEditingTitle, async (val: boolean): Promise<void> => {
       100% 100%,
       0% 100%
     );
+
     transition: clip-path var(--jetedit-editor-controls-animation);
 
     .jetedit_layout_sidebar_inner {
-      padding-right: calc(var(--jetedit-editor-controls-half-spacing) - 1rem);
-      padding-left: calc(var(--jetedit-editor-padding) - 1rem);
+      padding:
+        calc(var(--jetedit-editor-padding) - 0.5rem)
+        calc(var(--jetedit-editor-controls-half-spacing) - 1rem)
+        calc(var(--jetedit-editor-padding) - 1rem);
     }
   }
 }

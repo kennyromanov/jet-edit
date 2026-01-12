@@ -3,6 +3,8 @@ import { createI18n } from 'vue-i18n';
 import { createRouter } from 'vue-router';
 import { createPinia } from 'pinia';
 import { Obj, Locale, Document, SelectDocumentHandler, GetDocumentHandler, UpdateDocumentHandler, SaveDocumentHandler } from '@/types';
+import { audit } from '@/lib';
+import { BaseError } from '@/errors';
 import { DEFAULT_LANG, MESSAGES } from '@/i18n';
 import { history, routes } from '@/router';
 import * as types from '@/types';
@@ -22,11 +24,17 @@ export function createEditor(el: string | HTMLElement, options: Obj = {}): Obj {
 
     // Getting the options
 
+    const newEl: HTMLElement = el instanceof HTMLElement ? el : document.querySelector(el);
     const lang: Locale = options?.lang ?? DEFAULT_LANG;
     const selectDocumentHandler: SelectDocumentHandler | null = options?.selectDocument ?? null;
     const getDocumentHandler: GetDocumentHandler | null = options?.getDocument ?? null;
     const updDocumentHandler: UpdateDocumentHandler | null = options?.updDocument ?? null;
     const saveDocumentHandler: SaveDocumentHandler | null = options?.saveDocument ?? null;
+
+
+    // Doing some checks
+
+    if (!newEl) throw new BaseError(`Unable to create editor: Element ${audit(el)} does not exist`);
 
 
     // Getting the app
@@ -66,18 +74,35 @@ export function createEditor(el: string | HTMLElement, options: Obj = {}): Obj {
         appStore.setOnSaveDocument(saveDocumentHandler);
 
 
+    // Creating the resize observer
+
+    const observer = new ResizeObserver(entries => {
+        for (const entry of entries) {
+            appStore.setWidth(entry.contentRect.width);
+            appStore.setIsMobile(entry.contentRect.width < MOBILE_WIDTH);
+        }
+    });
+
+    observer.observe(newEl);
+
+
     // Defining the functions
 
-    const updIsMobile = (): void => appStore.setIsMobile(window.innerWidth < MOBILE_WIDTH);
+    const clear = () => {
+        observer.unobserve(newEl);
+        observer.disconnect();
+    };
 
-    const clear = () => window.removeEventListener('resize', updIsMobile);
+
+    // Updating the data
+
+    if (newEl?.offsetWidth) {
+        appStore.setWidth(newEl.offsetWidth);
+        appStore.setIsMobile(newEl.offsetWidth < MOBILE_WIDTH);
+    }
 
 
     // Mounting the app
-
-    window.addEventListener('resize', updIsMobile);
-
-    updIsMobile();
 
     app.mount(el);
 

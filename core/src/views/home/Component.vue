@@ -1,8 +1,8 @@
 <script setup lang="ts">
 
-import { ref, computed, watch, nextTick } from 'vue';
+import { onBeforeMount, onBeforeUnmount, ref, computed, watch, nextTick } from 'vue';
 import { storeToRefs } from 'pinia';
-import { Undo, Redo, Bold, Italic, Underline, Strikethrough, Zap } from 'lucide-vue-next';
+import { Undo, Redo, Bold, Italic, Underline, Strikethrough } from 'lucide-vue-next';
 import { Obj, DocumentRecord } from '@/types';
 import { isset, nanoid } from '@/lib';
 import { BaseError } from '@/errors';
@@ -10,7 +10,7 @@ import { Button } from '@/shadcn/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/components/ui/select';
 import store from '@/pinia/store';
 import Editor from '@/components/Editor.vue';
-import ToolbarAccess from '@/components/ToolbarAccess.vue';
+import Toolbar from '@/tools/toolbar';
 import FlextPut from '@/flext/modules/put';
 
 
@@ -24,15 +24,81 @@ const appStore = store.useApp();
 type Heading = 'title' | 'heading' | 'subheading' | 'body';
 
 
+// Constants
+
+const TOOLBAR_HEADER_SELECTOR = '[data-jetedit="toolbarHeaderInner"]';
+
+const TOOLBAR_LABEL_SELECTOR = '[data-jetedit="toolbarLabel"]';
+
+const TOOLBAR_HISTORY_BUTTONS_WIDTH = 81;
+
+const TOOLBAR_REMAINING_SPACE_BREAKPOINT = 18; // 1rem
+
+const TOOLBAR_FORMATTING_CONTROL_BREAKPOINT = 175;
+
+
 // Defining the variables
 
 const appStoreRefs = storeToRefs(appStore);
-const _document = appStoreRefs?.document ?? ref({});
+const _document = appStoreRefs?.document ?? ref<any>({});
 const editorEl = ref<any>(null);
+const toolbarHeaderEl = ref<any>(document.querySelector(TOOLBAR_HEADER_SELECTOR));
+const toolbarLabelEl = ref<any>(document.querySelector(TOOLBAR_LABEL_SELECTOR));
+const formattingControlEl = ref<any>(null);
+const toolbarHeaderWidth = ref<number|null>(null);
+const toolbarLabelWidth = ref<number|null>(null);
+const formattingControlWidth = ref<number|null>(null);
 const extensions = ref<any[]>([ FlextPut ]);
 
 
+// Getting the observers
+
+const toolbarHeaderObserver = ref<ResizeObserver>(new ResizeObserver(entries => {
+  for (const entry of entries)
+    toolbarHeaderWidth.value = entry.contentRect.width;
+}));
+
+const toolbarLabelObserver = ref<ResizeObserver>(new ResizeObserver(entries => {
+  for (const entry of entries)
+    toolbarLabelWidth.value = entry.contentRect.width;
+}));
+
+const formattingControlObserver = ref<ResizeObserver>(new ResizeObserver(entries => {
+  for (const entry of entries)
+    formattingControlWidth.value = entry.contentRect.width;
+}));
+
+
 // Defining the functions
+
+const useToolbarHeaderObserver = () => {
+  toolbarHeaderObserver.value.observe(toolbarHeaderEl.value);
+  toolbarHeaderWidth.value = toolbarHeaderEl.value?.offsetWidth ?? null;
+};
+
+const remToolbarHeaderObserver = () => {
+  toolbarHeaderObserver.value.unobserve(toolbarHeaderEl.value);
+  toolbarHeaderObserver.value.disconnect();
+};
+
+const useToolbarLabelObserver = () => {
+  toolbarLabelObserver.value.observe(toolbarLabelEl.value);
+  toolbarLabelWidth.value = toolbarLabelEl.value?.offsetWidth ?? null;
+};
+
+const remToolbarLabelObserver = () => {
+  toolbarLabelObserver.value.unobserve(toolbarLabelEl.value);
+  toolbarLabelObserver.value.disconnect();
+};
+
+const useFormattingControlObserver = () => {
+  formattingControlWidth.value = formattingControlEl.value?.offsetWidth ?? null;
+};
+
+const remFormattingControlObserver = () => {
+  formattingControlObserver.value.unobserve(formattingControlEl.value);
+  formattingControlObserver.value.disconnect();
+};
 
 const getLineHeading = (tiptap: any): Heading => {
 
@@ -170,12 +236,39 @@ const position = computed<number|null>({
   },
 });
 
+const toolbarHeaderRemainingSpace = computed<number|null>(() => {
+  if (isset(toolbarHeaderWidth.value) && isset(toolbarLabelWidth.value))
+    return toolbarHeaderWidth.value - toolbarLabelWidth.value - TOOLBAR_HISTORY_BUTTONS_WIDTH;
+  else
+    return null;
+});
+
 
 // Defining the watchers
 
 watch(id, async () => {
   await nextTick();
   editorEl.value?.focus();
+});
+
+watch(formattingControlEl, (val: HTMLElement | null, oldVal: HTMLElement | null) => {
+  if (oldVal) formattingControlObserver.value.unobserve(oldVal);
+  if (val) formattingControlObserver.value.observe(val);
+}, { immediate: true, deep: true });
+
+
+// Defining the hooks
+
+onBeforeMount(() => {
+  useToolbarHeaderObserver();
+  useToolbarLabelObserver();
+  useFormattingControlObserver();
+});
+
+onBeforeUnmount(() => {
+  remToolbarHeaderObserver();
+  remToolbarLabelObserver();
+  remFormattingControlObserver();
 });
 
 </script>
@@ -191,9 +284,13 @@ watch(id, async () => {
       ref="editorEl"
   >
     <template #controls="{ tiptap }">
-      <ToolbarAccess>
+      <Toolbar>
         <template #label>
-          <div class="jetedit_control flex select-none" aria-label="History">
+          <div
+              v-if="toolbarHeaderRemainingSpace >= TOOLBAR_REMAINING_SPACE_BREAKPOINT"
+              class="jetedit_control jetedit_history flex select-none"
+              aria-label="History"
+          >
             <Button
                 size="sm"
                 variant="ghost"
@@ -215,7 +312,35 @@ watch(id, async () => {
         </template>
 
         <div class="jetedit_controls w-full flex flex-col gap-[var(--jetedit-editor-padding)]">
-          <div class="p-1 flex justify-between rounded-lg border-[1px] border-gray-200" aria-label="Text formatting">
+          <div
+              v-if="toolbarHeaderRemainingSpace < TOOLBAR_REMAINING_SPACE_BREAKPOINT"
+              class="jetedit_control jetedit_history_mobile flex select-none"
+              aria-label="History"
+          >
+            <Button
+                size="sm"
+                variant="ghost"
+                :disabled="!tiptap.can().undo()"
+                @click="tiptap.commands.undo()"
+            >
+              <Undo />
+            </Button>
+
+            <Button
+                size="sm"
+                variant="ghost"
+                :disabled="!tiptap.can().redo()"
+                @click="tiptap.commands.redo()"
+            >
+              <Redo />
+            </Button>
+          </div>
+
+          <div
+              class="p-1 flex justify-between rounded-lg border-[1px] border-gray-200"
+              aria-label="Text formatting"
+              ref="formattingControlEl"
+          >
             <Button
                 class="jetedit_control w-9"
                 size="sm"
@@ -250,6 +375,7 @@ watch(id, async () => {
             </Button>
 
             <Button
+                v-if="formattingControlWidth >= TOOLBAR_FORMATTING_CONTROL_BREAKPOINT"
                 class="jetedit_control w-9"
                 size="sm"
                 variant="ghost"
@@ -324,18 +450,18 @@ watch(id, async () => {
             </Button>
           </div>
 
-          <div class="jetedit_control flex flex-wrap gap-1" aria-label="Blocks">
-            <Button
-                size="sm"
-                :variant="tiptap.isActive('bulletList') ? 'default' : 'secondary'"
-                @click="tiptap.commands.toggleBulletList()"
-            >
-              <Zap />
-              Smart
-            </Button>
-          </div>
+          <!--<div class="jetedit_control flex flex-wrap gap-1" aria-label="Blocks">-->
+          <!--  <Button-->
+          <!--      size="sm"-->
+          <!--      :variant="tiptap.isActive('bulletList') ? 'default' : 'secondary'"-->
+          <!--      @click="tiptap.commands.toggleBulletList()"-->
+          <!--  >-->
+          <!--    <Zap />-->
+          <!--    Smart-->
+          <!--  </Button>-->
+          <!--</div>-->
         </div>
-      </ToolbarAccess>
+      </Toolbar>
     </template>
   </Editor>
 </template>

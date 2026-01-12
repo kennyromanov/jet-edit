@@ -6,6 +6,8 @@ import { BaseError } from '@/errors';
 export default defineStore('app', {
   state: (): Obj => ({
     lang: null,
+    width: null,
+    isMobile: null,
 
     documents: null,
     document: null,
@@ -13,8 +15,6 @@ export default defineStore('app', {
     getDocumentHandler: null,
     updDocumentHandler: null,
     saveDocumentHandler: null,
-
-    isMobile: null,
 
     errors: [],
   }),
@@ -27,6 +27,18 @@ export default defineStore('app', {
     },
     setLang(val: Locale): void {
       this.lang = val;
+    },
+    getWidth(): number|null {
+      return this.width ?? null;
+    },
+    setWidth(val: number): void {
+      this.width = val;
+    },
+    getIsMobile(): boolean|null {
+      return this.isMobile ?? null;
+    },
+    setIsMobile(val: boolean): void {
+      this.isMobile = val;
     },
 
 
@@ -86,16 +98,6 @@ export default defineStore('app', {
     },
     setOnSaveDocument(val: SaveDocumentHandler): void {
       this.saveDocumentHandler = val;
-    },
-
-
-    // Mobile
-
-    getIsMobile(): boolean|null {
-      return this.isMobile;
-    },
-    setIsMobile(val: boolean): void {
-      this.isMobile = val;
     },
 
 
