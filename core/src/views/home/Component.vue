@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import store from '@/pinia/store';
 import Editor from '@/components/Editor.vue';
 import ToolbarAccess from '@/components/ToolbarAccess.vue';
-import FlextTest from '@/flext/modules/test';
+import FlextPut from '@/flext/modules/put';
 
 
 // Third-parties
@@ -29,7 +29,7 @@ type Heading = 'title' | 'heading' | 'subheading' | 'body';
 const appStoreRefs = storeToRefs(appStore);
 const _document = appStoreRefs?.document ?? ref({});
 const editorEl = ref<any>(null);
-const extensions = ref<any[]>([ FlextTest ]);
+const extensions = ref<any[]>([ FlextPut ]);
 
 
 // Defining the functions
